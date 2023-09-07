@@ -1,15 +1,21 @@
 package net.defekt.minecraft.starbox.data;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class CraftDataTypes {
 
     private CraftDataTypes() {}
 
+    public static void writeUUID(DataOutputStream out, UUID uid) throws IOException {
+        out.writeLong(uid.getMostSignificantBits());
+        out.writeLong(uid.getLeastSignificantBits());
+    }
 
     public static byte[] createVarInt(int value) {
         byte[] array = new byte[0];

@@ -2,7 +2,7 @@ package net.defekt.minecraft.starbox.network;
 
 import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.OpenState;
-import net.defekt.minecraft.starbox.data.ChatMessage;
+import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.CraftDataTypes;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
@@ -38,7 +38,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
 
     private GameState gameState = GameState.HANDSHAKING;
 
-    public void disconnect(ChatMessage reason) throws Exception {
+    public void disconnect(ChatComponent reason) throws Exception {
         try {
             if (gameState == GameState.LOGIN) {
                 sendPacket(new ServerStatusResponsePacket(reason.toJson()));

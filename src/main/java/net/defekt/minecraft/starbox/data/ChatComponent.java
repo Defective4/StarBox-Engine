@@ -4,20 +4,20 @@ import com.google.gson.Gson;
 
 import java.util.Arrays;
 
-public class ChatMessage {
+public class ChatComponent {
     private final String text;
     private final String translate;
     private final String color;
-    private final ChatMessage[] extra;
-    private final ChatMessage[] with;
+    private final ChatComponent[] extra;
+    private final ChatComponent[] with;
 
     public static class Builder {
 
         private String text;
         private String translate;
         private String color;
-        private ChatMessage[] extra;
-        private ChatMessage[] with;
+        private ChatComponent[] extra;
+        private ChatComponent[] with;
 
         public Builder setText(String text) {
             this.text = text;
@@ -34,25 +34,25 @@ public class ChatMessage {
             return this;
         }
 
-        public Builder setExtra(ChatMessage[] extra) {
+        public Builder setExtra(ChatComponent[] extra) {
             this.extra = extra;
             return this;
         }
 
-        public Builder setWith(ChatMessage[] with) {
+        public Builder setWith(ChatComponent[] with) {
             this.with = with;
             return this;
         }
 
-        public Builder addExtra(ChatMessage component) {
-            if (extra == null) extra = new ChatMessage[0];
+        public Builder addExtra(ChatComponent component) {
+            if (extra == null) extra = new ChatComponent[0];
             extra = Arrays.copyOf(extra, extra.length + 1);
             extra[extra.length - 1] = component;
             return this;
         }
 
-        public Builder addWith(ChatMessage component) {
-            if (with == null) with = new ChatMessage[0];
+        public Builder addWith(ChatComponent component) {
+            if (with == null) with = new ChatComponent[0];
             with = Arrays.copyOf(with, with.length + 1);
             with[with.length - 1] = component;
             return this;
@@ -63,16 +63,16 @@ public class ChatMessage {
             return this;
         }
 
-        public ChatMessage build() {
-            return new ChatMessage(text, translate, color, extra, with);
+        public ChatComponent build() {
+            return new ChatComponent(text, translate, color, extra, with);
         }
     }
 
-    public static ChatMessage fromString(String text) {
+    public static ChatComponent fromString(String text) {
         return new Builder().setText(text).translateColors().build();
     }
 
-    private ChatMessage(String text, String translate, String color, ChatMessage[] extra, ChatMessage[] with) {
+    private ChatComponent(String text, String translate, String color, ChatComponent[] extra, ChatComponent[] with) {
         this.text = text;
         this.translate = translate;
         this.color = color;
@@ -93,11 +93,11 @@ public class ChatMessage {
         return color;
     }
 
-    public ChatMessage[] getExtra() {
+    public ChatComponent[] getExtra() {
         return extra;
     }
 
-    public ChatMessage[] getWith() {
+    public ChatComponent[] getWith() {
         return with;
     }
 

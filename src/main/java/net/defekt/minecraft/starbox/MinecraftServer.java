@@ -3,8 +3,11 @@ package net.defekt.minecraft.starbox;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.dewy.nbt.Nbt;
+import dev.dewy.nbt.tags.collection.CompoundTag;
 import net.defekt.minecraft.starbox.network.PlayerConnection;
 
+import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -21,8 +24,17 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     private final ServerSocket srv;
     private final ExecutorService pool = Executors.newCachedThreadPool();
 
+    private final CompoundTag dimensionCodec;
+
     public MinecraftServer(String host, int port) throws IOException {
         srv = host == null ? new ServerSocket(port) : new ServerSocket(port, 50, InetAddress.getByName(host));
+        try (DataInputStream in = new DataInputStream(getClass().getResourceAsStream("/codec.bin"))) {
+            dimensionCodec = new Nbt().fromStream(in);
+        }
+    }
+
+    public CompoundTag getDimensionCodec() {
+        return dimensionCodec;
     }
 
     public void start() {
