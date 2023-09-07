@@ -7,10 +7,7 @@ import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayEmptyChunkPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerPositionAndLookPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
@@ -20,6 +17,8 @@ import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientSta
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CorePacketHandler extends AnnotatedPacketHandler {
@@ -71,12 +70,22 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            false,
                                                            false));
         connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 8.5, 8.5, 0f, 0f));
+        connection.getServer()
+                  .broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.ADD_PLAYER,
+                                                                  connection.getProfile()));
         for (int x = -10; x <= 10; x++)
             for (int z = -10; z <= 10; z++) {
                 connection.sendPacket(new ServerPlayEmptyChunkPacket(x, z));
-                connection.getServer()
-                          .broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.ADD_PLAYER,
-                                                                          connection.getProfile()));
+                List<ServerPlayMultiBlockChangePacket.BlockChangeEntry> entries = new ArrayList<>();
+                for (int lx = 0; lx < 16; lx++)
+                    for (int ly = 0; ly < 4; ly++)
+                        for (int lz = 0; lz < 16; lz++)
+                            entries.add(new ServerPlayMultiBlockChangePacket.BlockChangeEntry(lx, ly, lz, 1));
+
+                connection.sendPacket(new ServerPlayMultiBlockChangePacket(x,
+                                                                           0,
+                                                                           z,
+                                                                           entries.toArray(new ServerPlayMultiBlockChangePacket.BlockChangeEntry[0])));
             }
     }
 

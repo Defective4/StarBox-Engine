@@ -54,6 +54,17 @@ public class DataTypes {
         } while (value != 0);
     }
 
+    public static void writeVarLong(OutputStream outputStream, long value) throws IOException {
+        do {
+            byte temp = (byte) (value & 0b01111111);
+            value >>>= 7;
+            if (value != 0) {
+                temp |= 0b10000000;
+            }
+            outputStream.write(temp);
+        } while (value != 0);
+    }
+
     public static int readVarInt(DataInputStream inputStream) throws IOException {
         int numRead = 0;
         int result = 0;
