@@ -1,6 +1,6 @@
 package net.defekt.minecraft.starbox.network.packets.clientbound.login;
 
-import net.defekt.minecraft.starbox.data.CraftDataTypes;
+import net.defekt.minecraft.starbox.data.DataTypes;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 
 import java.io.DataOutputStream;
@@ -11,7 +11,7 @@ public class ServerLoginSuccessPacket extends ClientboundPacket {
     public ServerLoginSuccessPacket(UUID uid, String name) throws IOException {
         super(0x02);
         DataOutputStream os = getWrapper();
-        CraftDataTypes.writeUUID(os, uid);
-        CraftDataTypes.writeVarString(os, name);
+        DataTypes.writeUUID(os, uid);
+        DataTypes.writeVarString(os, name);
     }
 }

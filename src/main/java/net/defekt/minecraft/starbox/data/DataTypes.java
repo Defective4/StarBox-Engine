@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class CraftDataTypes {
+public class DataTypes {
 
-    private CraftDataTypes() {}
+    private DataTypes() {}
 
     public static void writeUUID(DataOutputStream out, UUID uid) throws IOException {
         out.writeLong(uid.getMostSignificantBits());

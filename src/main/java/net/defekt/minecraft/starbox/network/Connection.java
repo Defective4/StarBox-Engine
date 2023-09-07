@@ -1,37 +1,27 @@
 package net.defekt.minecraft.starbox.network;
 
 import net.defekt.minecraft.starbox.MinecraftServer;
+import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public abstract class Connection {
     private final MinecraftServer server;
-
-    public Connection(MinecraftServer server) {this.server = server;}
-
     private String announcedHost = null;
     private int announcedPort = -1;
     private int protocol = -1;
 
-    private String name = null;
-    private UUID uuid = null;
+    private PlayerProfile profile = null;
 
-    public String getName() {
-        return name;
+    public Connection(MinecraftServer server) {this.server = server;}
+
+    public PlayerProfile getProfile() {
+        return profile;
     }
 
-    protected void setName(String name) {
-        this.name = name;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    protected void setUuid(UUID uuid) {
-        this.uuid = uuid;
+    protected void setProfile(PlayerProfile profile) {
+        this.profile = profile;
     }
 
     public int getProtocol() {
@@ -46,11 +36,11 @@ public abstract class Connection {
         return announcedHost;
     }
 
-    public abstract void sendPacket(ClientboundPacket packet) throws IOException;
-
     protected void setAnnouncedHost(String announcedHost) {
         this.announcedHost = announcedHost;
     }
+
+    public abstract void sendPacket(ClientboundPacket packet) throws IOException;
 
     public int getAnnouncedPort() {
         return announcedPort;

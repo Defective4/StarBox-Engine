@@ -1,18 +1,27 @@
 package net.defekt.minecraft.starbox;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.dewy.nbt.Nbt;
+import dev.dewy.nbt.api.registry.TagTypeRegistry;
 import dev.dewy.nbt.tags.collection.CompoundTag;
+import net.defekt.minecraft.starbox.data.PlayerProfile;
+import net.defekt.minecraft.starbox.network.Connection;
 import net.defekt.minecraft.starbox.network.PlayerConnection;
+import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayKeepAlivePacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,11 +35,64 @@ public class MinecraftServer implements AutoCloseable, OpenState {
 
     private final CompoundTag dimensionCodec;
 
+    private final Map<UUID, Connection> onlineConnections = new ConcurrentHashMap<>();
+    private final Timer timer = new Timer(true);
+
     public MinecraftServer(String host, int port) throws IOException {
         srv = host == null ? new ServerSocket(port) : new ServerSocket(port, 50, InetAddress.getByName(host));
+        File codecFile = new File("codec.json");
+        CompoundTag codec = null;
+        CompoundTag def;
+        Nbt nbt = new Nbt();
         try (DataInputStream in = new DataInputStream(getClass().getResourceAsStream("/codec.bin"))) {
-            dimensionCodec = new Nbt().fromStream(in);
+            def = nbt.fromStream(in);
         }
+
+        if (!codecFile.exists()) {
+            try (OutputStream os = Files.newOutputStream(codecFile.toPath())) {
+                JsonObject json = def.toJson(0, new TagTypeRegistry());
+                os.write(new GsonBuilder().setPrettyPrinting().create().toJson(json).getBytes(StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (codecFile.isFile()) {
+            try {
+                codec = nbt.fromJson(codecFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        dimensionCodec = codec == null ? def : codec;
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                for (Connection con : getOnlineConnections()) {
+                    try {
+                        con.sendPacket(new ServerPlayKeepAlivePacket());
+                    } catch (IOException ignored) {}
+                }
+            }
+        }, 5000, 5000);
+    }
+
+    public void broadcastPacket(ClientboundPacket packet) {
+        for (Connection con : getOnlineConnections())
+            try {
+                con.sendPacket(packet);
+            } catch (Exception ignored) {}
+    }
+
+    public Collection<Connection> getOnlineConnections() {
+        return new ArrayList<>(onlineConnections.values());
+    }
+
+    public void insertConnection(Connection con) {
+        if (con.getProfile() == null) return;
+        onlineConnections.put(con.getProfile().getUuid(), con);
     }
 
     public CompoundTag getDimensionCodec() {
@@ -42,10 +104,21 @@ public class MinecraftServer implements AutoCloseable, OpenState {
             try {
                 Socket client = srv.accept();
                 pool.submit(() -> {
+                    PlayerConnection lCon = null;
                     try (PlayerConnection con = new PlayerConnection(this, client)) {
+                        lCon = con;
                         con.handle();
                     } catch (EOFException ignored) {} catch (Exception e) {
                         e.printStackTrace();
+                    } finally {
+                        PlayerProfile prof = lCon.getProfile();
+                        if (prof != null) {
+                            onlineConnections.remove(prof.getUuid());
+                            try {
+                                broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.REMOVE_PLAYER,
+                                                                               prof));
+                            } catch (IOException ignored) {}
+                        }
                     }
                 });
             } catch (Exception e) {
@@ -63,7 +136,7 @@ public class MinecraftServer implements AutoCloseable, OpenState {
 
         JsonObject players = new JsonObject();
         players.add("max", new JsonPrimitive(1));
-        players.add("online", new JsonPrimitive(0));
+        players.add("online", new JsonPrimitive(onlineConnections.size()));
         players.add("sample", new JsonArray());
 
         JsonObject description = new JsonObject();

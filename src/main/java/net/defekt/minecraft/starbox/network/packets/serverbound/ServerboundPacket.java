@@ -8,12 +8,34 @@ import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientSta
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ServerboundPacket implements Cancellable {
+    private final byte[] data;
+    private boolean cancelled = false;
+
+    protected ServerboundPacket(byte[] data) {this.data = data;}
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public DataInputStream getStream() {
+        return new DataInputStream(new ByteArrayInputStream(data));
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
     public static class Registry {
 
         private static final Map<GameState, Map<Integer, Class<? extends ServerboundPacket>>> PACKETS = new HashMap<>();
@@ -45,30 +67,5 @@ public class ServerboundPacket implements Cancellable {
         public static Class<? extends ServerboundPacket> getPacketForID(GameState state, int id) {
             return PACKETS.getOrDefault(state, Collections.emptyMap()).get(id);
         }
-    }
-
-    private final byte[] data;
-
-    protected ServerboundPacket(byte[] data) {this.data = data;}
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public DataInputStream getStream() {
-        return new DataInputStream(new ByteArrayInputStream(data));
-    }
-
-
-    private boolean cancelled = false;
-
-    @Override
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
     }
 }

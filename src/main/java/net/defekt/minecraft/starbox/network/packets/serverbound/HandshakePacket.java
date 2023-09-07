@@ -3,8 +3,8 @@ package net.defekt.minecraft.starbox.network.packets.serverbound;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import static net.defekt.minecraft.starbox.data.CraftDataTypes.readVarInt;
-import static net.defekt.minecraft.starbox.data.CraftDataTypes.readVarString;
+import static net.defekt.minecraft.starbox.data.DataTypes.readVarInt;
+import static net.defekt.minecraft.starbox.data.DataTypes.readVarString;
 
 public class HandshakePacket extends ServerboundPacket {
 

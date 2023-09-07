@@ -3,10 +3,13 @@ package net.defekt.minecraft.starbox.network;
 import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.GameMode;
+import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayEmptyChunkPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerPositionAndLookPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
@@ -22,9 +25,7 @@ import java.util.UUID;
 public class CorePacketHandler extends AnnotatedPacketHandler {
     private final PlayerConnection connection;
 
-    public CorePacketHandler(PlayerConnection connection) throws IOException {
-        this.connection = connection;
-    }
+    public CorePacketHandler(PlayerConnection connection) {this.connection = connection;}
 
     @PacketHandlerMethod
     public void onLoginStart(ClientLoginStartPacket packet) throws Exception {
@@ -51,15 +52,16 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
         }
 
         UUID uid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-        connection.setName(name);
-        connection.setUuid(uid);
+        PlayerProfile profile = new PlayerProfile(name, uid, GameMode.CREATIVE, null);
+        connection.setProfile(profile);
 
 
         connection.sendPacket(new ServerLoginSuccessPacket(uid, name));
         connection.setGameState(GameState.PLAY);
+        connection.getServer().insertConnection(connection);
         connection.sendPacket(new ServerPlayJoinGamePacket(1,
                                                            false,
-                                                           GameMode.CREATIVE,
+                                                           profile.getGameMode(),
                                                            GameMode.NONE,
                                                            "minecraft:overworld",
                                                            connection.getServer().getDimensionCodec(),
@@ -69,6 +71,13 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            false,
                                                            false));
         connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 8.5, 8.5, 0f, 0f));
+        for (int x = -10; x <= 10; x++)
+            for (int z = -10; z <= 10; z++) {
+                connection.sendPacket(new ServerPlayEmptyChunkPacket(x, z));
+                connection.getServer()
+                          .broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.ADD_PLAYER,
+                                                                          connection.getProfile()));
+            }
     }
 
     @PacketHandlerMethod

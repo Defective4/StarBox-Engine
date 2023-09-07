@@ -11,6 +11,42 @@ public class ChatComponent {
     private final ChatComponent[] extra;
     private final ChatComponent[] with;
 
+    private ChatComponent(String text, String translate, String color, ChatComponent[] extra, ChatComponent[] with) {
+        this.text = text;
+        this.translate = translate;
+        this.color = color;
+        this.extra = extra;
+        this.with = with;
+    }
+
+    public static ChatComponent fromString(String text) {
+        return new Builder().setText(text).translateColors().build();
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getTranslate() {
+        return translate;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public ChatComponent[] getExtra() {
+        return extra;
+    }
+
+    public ChatComponent[] getWith() {
+        return with;
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
+
     public static class Builder {
 
         private String text;
@@ -66,42 +102,5 @@ public class ChatComponent {
         public ChatComponent build() {
             return new ChatComponent(text, translate, color, extra, with);
         }
-    }
-
-    public static ChatComponent fromString(String text) {
-        return new Builder().setText(text).translateColors().build();
-    }
-
-    private ChatComponent(String text, String translate, String color, ChatComponent[] extra, ChatComponent[] with) {
-        this.text = text;
-        this.translate = translate;
-        this.color = color;
-        this.extra = extra;
-        this.with = with;
-    }
-
-
-    public String getText() {
-        return text;
-    }
-
-    public String getTranslate() {
-        return translate;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public ChatComponent[] getExtra() {
-        return extra;
-    }
-
-    public ChatComponent[] getWith() {
-        return with;
-    }
-
-    public String toJson() {
-        return new Gson().toJson(this);
     }
 }

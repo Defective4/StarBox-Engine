@@ -3,7 +3,7 @@ package net.defekt.minecraft.starbox.network;
 import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.OpenState;
 import net.defekt.minecraft.starbox.data.ChatComponent;
-import net.defekt.minecraft.starbox.data.CraftDataTypes;
+import net.defekt.minecraft.starbox.data.DataTypes;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
@@ -23,6 +23,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     private final OutputStream outputStream;
 
     private final CorePacketHandler coreHandler;
+    private GameState gameState = GameState.HANDSHAKING;
 
     public PlayerConnection(MinecraftServer server, Socket socket) throws IOException {
         super(server);
@@ -35,8 +36,6 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     public Collection<PacketHandler> getAllPacketHandlers() {
         return Collections.singleton(coreHandler);
     }
-
-    private GameState gameState = GameState.HANDSHAKING;
 
     public void disconnect(ChatComponent reason) throws Exception {
         try {
@@ -55,7 +54,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     @Override
     public void handle() throws Exception {
         while (isOpen()) {
-            int len = CraftDataTypes.readVarInt(inputStream);
+            int len = DataTypes.readVarInt(inputStream);
             int id = inputStream.readByte();
             byte[] data = new byte[len - 1];
             inputStream.readFully(data);

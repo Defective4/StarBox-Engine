@@ -1,5 +1,8 @@
 package net.defekt.minecraft.starbox.network;
 
 public enum GameState {
-    HANDSHAKING, STATUS, LOGIN, PLAY
+    HANDSHAKING,
+    STATUS,
+    LOGIN,
+    PLAY
 }
