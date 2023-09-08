@@ -4,6 +4,8 @@ import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.OpenState;
 import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.DataTypes;
+import net.defekt.minecraft.starbox.inventory.Inventory;
+import net.defekt.minecraft.starbox.inventory.PlayerInventory;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
@@ -23,6 +25,9 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     private final OutputStream outputStream;
 
     private final CorePacketHandler coreHandler;
+
+    private final Inventory inventory = new PlayerInventory(this);
+
     private GameState gameState = GameState.HANDSHAKING;
 
     public PlayerConnection(MinecraftServer server, Socket socket) throws IOException {
@@ -35,6 +40,10 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
 
     public Collection<PacketHandler> getAllPacketHandlers() {
         return Collections.singleton(coreHandler);
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public void disconnect(ChatComponent reason) throws Exception {

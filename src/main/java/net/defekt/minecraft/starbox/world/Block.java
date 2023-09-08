@@ -6,11 +6,13 @@ public class Block {
     private final Location location;
     private final Material type;
     private final Chunk chunk;
+    private final int blockState;
 
-    public Block(Location location, Material type, Chunk chunk) {
+    public Block(Location location, Material type, Chunk chunk, int blockState) {
         this.location = location;
         this.type = type;
         this.chunk = chunk;
+        this.blockState = blockState;
     }
 
     public Location getLocation() {
@@ -23,5 +25,9 @@ public class Block {
 
     public Chunk getChunk() {
         return chunk;
+    }
+
+    public int getBlockState() {
+        return blockState;
     }
 }

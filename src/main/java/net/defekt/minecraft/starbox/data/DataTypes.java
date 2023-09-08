@@ -1,5 +1,9 @@
 package net.defekt.minecraft.starbox.data;
 
+import dev.dewy.nbt.Nbt;
+import dev.dewy.nbt.tags.collection.CompoundTag;
+import net.defekt.minecraft.starbox.inventory.ItemStack;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,6 +15,31 @@ import java.util.UUID;
 public class DataTypes {
 
     private DataTypes() {}
+
+    public static void writeSlotData(DataOutputStream out, ItemStack item) throws IOException {
+        out.writeBoolean(item != null);
+        if (item != null) {
+            writeVarInt(out, item.getType().getId());
+            out.writeByte(item.getCount());
+            CompoundTag tag = item.getNbt();
+            if (tag != null) new Nbt().toStream(tag, out);
+            else out.writeByte(0);
+        }
+    }
+
+    public static ItemStack readSlotData(DataInputStream in) throws IOException {
+        boolean present = in.readBoolean();
+        if (!present) return null;
+        int id = readVarInt(in);
+        int count = in.readByte();
+        CompoundTag nbt = null;
+        try {
+            nbt = new Nbt().fromStream(in);
+        } catch (Exception ignored) {}
+        Material type = Material.getItemForID(id);
+        if (type == null) return null;
+        return new ItemStack(type, nbt, count);
+    }
 
     public static void writeUUID(DataOutputStream out, UUID uid) throws IOException {
         out.writeLong(uid.getMostSignificantBits());

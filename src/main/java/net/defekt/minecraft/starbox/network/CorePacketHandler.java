@@ -4,6 +4,7 @@ import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.GameMode;
 import net.defekt.minecraft.starbox.data.PlayerProfile;
+import net.defekt.minecraft.starbox.inventory.ItemStack;
 import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
@@ -13,6 +14,7 @@ import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerSta
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.login.ClientLoginStartPacket;
+import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayCreativeInventoryActionPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
 import net.defekt.minecraft.starbox.world.Block;
@@ -26,6 +28,13 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
     private final PlayerConnection connection;
 
     public CorePacketHandler(PlayerConnection connection) {this.connection = connection;}
+
+    @PacketHandlerMethod
+    public void onCreativeAction(ClientPlayCreativeInventoryActionPacket packet) {
+        short slot = packet.getSlot();
+        ItemStack item = packet.getItem();
+        connection.getInventory().setItem(slot, item);
+    }
 
     @PacketHandlerMethod
     public void onLoginStart(ClientLoginStartPacket packet) throws Exception {
@@ -84,7 +93,7 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                       .add(new BlockChangeEntry(block.getLocation().getBlockX(),
                                                 block.getLocation().getBlockY() % 16,
                                                 block.getLocation().getBlockZ(),
-                                                block.getType().getMinState()));
+                                                block.getType().getMinState() + block.getBlockState()));
             }
             for (Map.Entry<Integer, List<BlockChangeEntry>> entry : blocks.entrySet()) {
                 connection.sendPacket(new ServerPlayMultiBlockChangePacket(chk.getX(),

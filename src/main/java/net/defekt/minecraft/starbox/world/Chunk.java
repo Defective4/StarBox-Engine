@@ -20,8 +20,9 @@ public class Chunk {
             for (int j = 0; j < 16; j++)
                 for (int k = 0; k < 16; k++) {
                     Material type = j == 0 ? Material.BEDROCK : j < 15 ? Material.DIRT : Material.GRASS_BLOCK;
+                    int state = j < 15 ? 0 : 1;
                     Location loc = new Location(i, j, k);
-                    chk.blocks.put(loc, new Block(loc, type, chk));
+                    chk.blocks.put(loc, new Block(loc, type, chk, state));
                 }
         return chk;
     }
@@ -31,7 +32,8 @@ public class Chunk {
     }
 
     public Block getBlock(int x, int y, int z) {
-        return blocks.getOrDefault(new Location(x, y, z), new Block(new Location(x, y, z), Material.AIR, this));
+        return blocks.getOrDefault(new Location(x, y, z),
+                                   new Block(new Location(x, y, z), Material.AIR, this, 0));
     }
 
     public int getX() {

@@ -1180,4 +1180,10 @@ public enum Material {
     public int getMaxState() {
         return maxState;
     }
+
+    public static Material getItemForID(int id) {
+        for (Material mat : values())
+            if (mat.getId() == id) return mat;
+        return null;
+    }
 }
