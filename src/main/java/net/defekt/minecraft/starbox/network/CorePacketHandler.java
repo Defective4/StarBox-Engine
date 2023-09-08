@@ -8,12 +8,16 @@ import net.defekt.minecraft.starbox.inventory.ItemStack;
 import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayEmptyChunkPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayMultiBlockChangePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayMultiBlockChangePacket.BlockChangeEntry;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerPositionAndLookPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.login.ClientLoginStartPacket;
+import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayChatMessagePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayCreativeInventoryActionPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
@@ -28,6 +32,31 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
     private final PlayerConnection connection;
 
     public CorePacketHandler(PlayerConnection connection) {this.connection = connection;}
+
+    @PacketHandlerMethod
+    public void onMessageReceive(ClientPlayChatMessagePacket packet) throws IOException {
+        String message = packet.getMessage();
+        if (message.length() > 256 || message.contains("§")) {
+            connection.sendMessage(new ChatComponent.Builder().setTranslate("chat.cannotSend").setColor("red").build());
+            return;
+        }
+
+        connection.getServer()
+                  .broadcastMessage(new ChatComponent.Builder().setTranslate("chat.type.text")
+                                                               .addWith(new ChatComponent.Builder().setText(connection.getProfile()
+                                                                                                                      .getName())
+                                                                                                   .setHoverEvent(
+                                                                                                           ChatComponent.fromString(
+                                                                                                                   "Click to send a private message"))
+                                                                                                   .setClickEvent(
+                                                                                                           ChatComponent.Builder.ClickEventType.SUGGEST_COMMAND,
+                                                                                                           "/msg " + connection.getProfile()
+                                                                                                                               .getName() + " ")
+                                                                                                   .build())
+                                                               .addWith(new ChatComponent.Builder().setText(message)
+                                                                                                   .build())
+                                                               .build());
+    }
 
     @PacketHandlerMethod
     public void onCreativeAction(ClientPlayCreativeInventoryActionPacket packet) {
@@ -60,6 +89,11 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
             }
         }
 
+        if (connection.getServer().getConnection(name) != null) {
+            connection.disconnect(ChatComponent.fromString("Someone with this name is already playing!"));
+            return;
+        }
+
         UUID uid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
         PlayerProfile profile = new PlayerProfile(name, uid, GameMode.CREATIVE, null);
         connection.setProfile(profile);
@@ -80,9 +114,7 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            false,
                                                            true));
         connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 16, 8.5, 0f, 0f));
-        connection.getServer()
-                  .broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.ADD_PLAYER,
-                                                                  connection.getProfile()));
+
         for (Chunk chk : connection.getServer().getWorld().getChunks()) {
             connection.sendPacket(new ServerPlayEmptyChunkPacket(chk.getX(), chk.getZ()));
             Map<Integer, List<BlockChangeEntry>> blocks = new HashMap<>();

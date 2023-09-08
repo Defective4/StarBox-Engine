@@ -10,8 +10,8 @@ public class World {
 
     public static World loadWorld() {
         World world = new World();
-        for (int x = -10; x <= 10; x++)
-            for (int z = -10; z <= 10; z++)
+        for (int x = -2; x <= 2; x++)
+            for (int z = -2; z <= 2; z++)
                 world.chunks.add(Chunk.generate(x, z));
         return world;
     }

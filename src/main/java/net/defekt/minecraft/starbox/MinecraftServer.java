@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import dev.dewy.nbt.Nbt;
 import dev.dewy.nbt.api.registry.TagTypeRegistry;
 import dev.dewy.nbt.tags.collection.CompoundTag;
+import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.network.Connection;
 import net.defekt.minecraft.starbox.network.PlayerConnection;
@@ -103,6 +104,38 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     public void insertConnection(Connection con) {
         if (con.getProfile() == null) return;
         onlineConnections.put(con.getProfile().getUuid(), con);
+        try {
+            broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.ADD_PLAYER,
+                                                           con.getProfile()));
+            broadcastMessage(new ChatComponent.Builder().setColor("yellow")
+                                                        .setTranslate("multiplayer.player.joined")
+                                                        .addWith(ChatComponent.fromString(con.getProfile().getName()))
+                                                        .build());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Connection getConnection(String name) {
+        for (Connection con : getOnlineConnections())
+            if (con.getProfile().getName().equalsIgnoreCase(name)) return con;
+        return null;
+    }
+
+    public Connection getConnection(UUID uid) {
+        for (Connection con : getOnlineConnections())
+            if (con.getProfile().getUuid().equals(uid)) return con;
+        return null;
+    }
+
+    public void broadcastMessage(ChatComponent message) {
+        for (Connection con : getOnlineConnections()) {
+            try {
+                con.sendMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public CompoundTag getDimensionCodec() {
@@ -127,6 +160,10 @@ public class MinecraftServer implements AutoCloseable, OpenState {
                             try {
                                 broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.REMOVE_PLAYER,
                                                                                prof));
+                                broadcastMessage(new ChatComponent.Builder().setColor("yellow")
+                                                                            .setTranslate("multiplayer.player.left")
+                                                                            .addWith(ChatComponent.fromString(prof.getName()))
+                                                                            .build());
                             } catch (IOException ignored) {}
                         }
                     }

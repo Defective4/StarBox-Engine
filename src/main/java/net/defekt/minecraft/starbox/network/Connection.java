@@ -1,8 +1,10 @@
 package net.defekt.minecraft.starbox.network;
 
 import net.defekt.minecraft.starbox.MinecraftServer;
+import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayChatMessagePacket;
 
 import java.io.IOException;
 
@@ -41,6 +43,10 @@ public abstract class Connection {
     }
 
     public abstract void sendPacket(ClientboundPacket packet) throws IOException;
+
+    public void sendMessage(ChatComponent message) throws IOException {
+        sendPacket(new ServerPlayChatMessagePacket(message, ServerPlayChatMessagePacket.Position.CHAT, null));
+    }
 
     public int getAnnouncedPort() {
         return announcedPort;
