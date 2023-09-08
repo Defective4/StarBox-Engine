@@ -8,18 +8,19 @@ import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayMultiBlockChangePacket.BlockChangeEntry;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.login.ClientLoginStartPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
+import net.defekt.minecraft.starbox.world.Block;
+import net.defekt.minecraft.starbox.world.Chunk;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class CorePacketHandler extends AnnotatedPacketHandler {
     private final PlayerConnection connection;
@@ -68,25 +69,31 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            false,
                                                            true,
                                                            false,
-                                                           false));
-        connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 8.5, 8.5, 0f, 0f));
+                                                           true));
+        connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 16, 8.5, 0f, 0f));
         connection.getServer()
                   .broadcastPacket(new ServerPlayPlayerInfoPacket(ServerPlayPlayerInfoPacket.Action.ADD_PLAYER,
                                                                   connection.getProfile()));
-        for (int x = -10; x <= 10; x++)
-            for (int z = -10; z <= 10; z++) {
-                connection.sendPacket(new ServerPlayEmptyChunkPacket(x, z));
-                List<ServerPlayMultiBlockChangePacket.BlockChangeEntry> entries = new ArrayList<>();
-                for (int lx = 0; lx < 16; lx++)
-                    for (int ly = 0; ly < 4; ly++)
-                        for (int lz = 0; lz < 16; lz++)
-                            entries.add(new ServerPlayMultiBlockChangePacket.BlockChangeEntry(lx, ly, lz, 1));
-
-                connection.sendPacket(new ServerPlayMultiBlockChangePacket(x,
-                                                                           0,
-                                                                           z,
-                                                                           entries.toArray(new ServerPlayMultiBlockChangePacket.BlockChangeEntry[0])));
+        for (Chunk chk : connection.getServer().getWorld().getChunks()) {
+            connection.sendPacket(new ServerPlayEmptyChunkPacket(chk.getX(), chk.getZ()));
+            Map<Integer, List<BlockChangeEntry>> blocks = new HashMap<>();
+            for (Block block : chk.getBlocks().values()) {
+                int sectY = Math.floorDiv(block.getLocation().getBlockY(), 16);
+                if (!blocks.containsKey(sectY)) blocks.put(sectY, new ArrayList<>());
+                blocks.get(sectY)
+                      .add(new BlockChangeEntry(block.getLocation().getBlockX(),
+                                                block.getLocation().getBlockY() % 16,
+                                                block.getLocation().getBlockZ(),
+                                                block.getType().getMinState()));
             }
+            for (Map.Entry<Integer, List<BlockChangeEntry>> entry : blocks.entrySet()) {
+                connection.sendPacket(new ServerPlayMultiBlockChangePacket(chk.getX(),
+                                                                           entry.getKey(),
+                                                                           chk.getZ(),
+                                                                           entry.getValue()
+                                                                                .toArray(new BlockChangeEntry[0])));
+            }
+        }
     }
 
     @PacketHandlerMethod

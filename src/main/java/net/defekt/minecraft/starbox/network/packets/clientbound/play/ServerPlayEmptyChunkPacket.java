@@ -17,12 +17,10 @@ public class ServerPlayEmptyChunkPacket extends ClientboundPacket {
         wrapper.writeInt(x);
         wrapper.writeInt(z);
         wrapper.writeBoolean(true);
-        wrapper.writeByte(4);
+        wrapper.writeByte(0);
 
         CompoundTag map = new CompoundTag();
-        long[] lg = new long[36];
-        Arrays.fill(lg, 4);
-        map.put("MOTION_BLOCKING", new LongArrayTag(lg));
+        map.put("MOTION_BLOCKING", new LongArrayTag(new long[36]));
         map.put("WORLD_SURFACE", new LongArrayTag(new long[36]));
         new Nbt().toStream(map, wrapper);
 

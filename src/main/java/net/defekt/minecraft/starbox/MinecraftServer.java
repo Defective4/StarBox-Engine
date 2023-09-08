@@ -13,6 +13,7 @@ import net.defekt.minecraft.starbox.network.PlayerConnection;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayKeepAlivePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
+import net.defekt.minecraft.starbox.world.World;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -38,8 +39,13 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     private final Map<UUID, Connection> onlineConnections = new ConcurrentHashMap<>();
     private final Timer timer = new Timer(true);
 
+    private final World world;
+
     public MinecraftServer(String host, int port) throws IOException {
         srv = host == null ? new ServerSocket(port) : new ServerSocket(port, 50, InetAddress.getByName(host));
+
+        world = World.loadWorld();
+
         File codecFile = new File("codec.json");
         CompoundTag codec = null;
         CompoundTag def;
@@ -77,6 +83,10 @@ public class MinecraftServer implements AutoCloseable, OpenState {
                 }
             }
         }, 5000, 5000);
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     public void broadcastPacket(ClientboundPacket packet) {
