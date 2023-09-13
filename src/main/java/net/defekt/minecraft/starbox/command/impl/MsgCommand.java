@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class MsgCommand extends Command {
 
     public MsgCommand() {
-        super("msg", "minecraft.command.msg", "tell", "pv", "m");
+        super("msg", "minecraft.command.msg", "tell", "w");
         setArgs("<target> <message>");
     }
 
