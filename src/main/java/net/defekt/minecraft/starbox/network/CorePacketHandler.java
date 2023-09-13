@@ -47,7 +47,7 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
             String command = commandData[0].toLowerCase();
             String[] args = Arrays.copyOfRange(commandData, 1, commandData.length);
 
-            Command cmd = connection.getServer().getCommandRegistry().getCommand(command);
+            Command cmd = connection.getServer().getCommandRegistry().findCommandByAlias(command);
             boolean success;
             if (cmd != null) success = cmd.execute(connection, command, args);
             else success = false;
@@ -59,6 +59,14 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                                   .setText("/")
                                                                   .setExtra(new ChatComponent[]{
                                                                           new ChatComponent.Builder().setColor("red")
+                                                                                                     .setHoverEvent(
+                                                                                                             ChatComponent.fromString(
+                                                                                                                     "Click to edit the command"))
+                                                                                                     .setClickEvent(
+                                                                                                             ChatComponent.Builder.ClickEventType.SUGGEST_COMMAND,
+                                                                                                             "/" + String.join(
+                                                                                                                     " ",
+                                                                                                                     commandData))
                                                                                                      .setText(String.join(
                                                                                                              " ",
                                                                                                              commandData)).build(),

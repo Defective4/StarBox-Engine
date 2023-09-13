@@ -121,7 +121,7 @@ public class MinecraftServer implements AutoCloseable, OpenState {
                                                                                                     "Click to send a private message"))
                                                                                             .setClickEvent(ChatComponent.Builder.ClickEventType.SUGGEST_COMMAND,
                                                                                                            "/msg " + con.getProfile()
-                                                                                                                        .getName())
+                                                                                                                        .getName()+" ")
                                                                                             .setText(con.getProfile()
                                                                                                         .getName())
                                                                                             .build())

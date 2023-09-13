@@ -1,13 +1,14 @@
 package net.defekt.minecraft.starbox.command;
 
 import net.defekt.minecraft.starbox.MinecraftServer;
-import net.defekt.minecraft.starbox.command.impl.*;
-import net.defekt.minecraft.starbox.command.impl.admin.ClearCommand;
-import net.defekt.minecraft.starbox.command.impl.admin.FillCommand;
-import net.defekt.minecraft.starbox.command.impl.admin.GiveCommand;
-import net.defekt.minecraft.starbox.command.impl.admin.KickCommand;
+import net.defekt.minecraft.starbox.command.impl.HelpCommand;
+import net.defekt.minecraft.starbox.command.impl.ListCommand;
+import net.defekt.minecraft.starbox.command.impl.MeCommand;
+import net.defekt.minecraft.starbox.command.impl.MsgCommand;
+import net.defekt.minecraft.starbox.command.impl.admin.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandRegistry {
     private final List<Command> registeredCommands = new ArrayList<>();
@@ -26,6 +27,9 @@ public class CommandRegistry {
         registerCommand(new HelpCommand());
         registerCommand(new ListCommand());
         registerCommand(new MeCommand());
+        registerCommand(new MsgCommand());
+        registerCommand(new PublishCommand());
+        registerCommand(new SayCommand());
     }
 
     public void unregisterCommand(Command cmd) {
@@ -39,6 +43,15 @@ public class CommandRegistry {
     public Command getCommand(String name) {
         for (Command cmd : registeredCommands) {
             if (cmd.getName().equalsIgnoreCase(name)) return cmd;
+        }
+        return null;
+    }
+
+    public Command findCommandByAlias(String name) {
+        for (Command cmd : registeredCommands) {
+            if (cmd.getName().equalsIgnoreCase(name)) return cmd;
+            else for (String alias : cmd.getAliases())
+                if (name.equalsIgnoreCase(alias)) return cmd;
         }
         return null;
     }
