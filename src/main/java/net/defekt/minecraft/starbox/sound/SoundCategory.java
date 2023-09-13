@@ -19,4 +19,10 @@ public enum SoundCategory {
     public int getId() {
         return id;
     }
+
+    public static SoundCategory getOrDefault(String name) {
+        for (SoundCategory cat : values())
+            if (cat.name().equalsIgnoreCase(name)) return cat;
+        return MASTER;
+    }
 }
