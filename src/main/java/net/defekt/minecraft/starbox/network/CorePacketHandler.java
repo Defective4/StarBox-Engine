@@ -9,8 +9,8 @@ import net.defekt.minecraft.starbox.inventory.ItemStack;
 import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayMultiBlockChangePacket.BlockChangeEntry;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerPositionAndLookPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
@@ -19,13 +19,11 @@ import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayC
 import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayCreativeInventoryActionPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
-import net.defekt.minecraft.starbox.world.Block;
-import net.defekt.minecraft.starbox.world.Chunk;
-import net.defekt.minecraft.starbox.world.World;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.UUID;
 
 public class CorePacketHandler extends AnnotatedPacketHandler {
     private final PlayerConnection connection;
@@ -150,30 +148,6 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            false,
                                                            true));
         connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 16, 8.5, 0f, 0f));
-
-        World world = connection.getWorld();
-        connection.sendPacket(new ServerPlayTimePacket(world.getAge(), -world.getTime()));
-
-        for (Chunk chk : connection.getServer().getWorld().getChunks()) {
-            connection.sendPacket(new ServerPlayEmptyChunkPacket(chk.getX(), chk.getZ()));
-            Map<Integer, List<BlockChangeEntry>> blocks = new HashMap<>();
-            for (Block block : chk.getBlocks().values()) {
-                int sectY = Math.floorDiv(block.getLocation().getBlockY(), 16);
-                if (!blocks.containsKey(sectY)) blocks.put(sectY, new ArrayList<>());
-                blocks.get(sectY)
-                      .add(new BlockChangeEntry(block.getLocation().getBlockX(),
-                                                block.getLocation().getBlockY() % 16,
-                                                block.getLocation().getBlockZ(),
-                                                block.getType().getMinState() + block.getStateOffset()));
-            }
-            for (Map.Entry<Integer, List<BlockChangeEntry>> entry : blocks.entrySet()) {
-                connection.sendPacket(new ServerPlayMultiBlockChangePacket(chk.getX(),
-                                                                           entry.getKey(),
-                                                                           chk.getZ(),
-                                                                           entry.getValue()
-                                                                                .toArray(new BlockChangeEntry[0])));
-            }
-        }
     }
 
     @PacketHandlerMethod

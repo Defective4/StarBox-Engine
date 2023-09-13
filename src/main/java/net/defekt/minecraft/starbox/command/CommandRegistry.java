@@ -21,7 +21,6 @@ public class CommandRegistry {
 
     private void registerSystemCommands() {
         registerCommand(new ClearCommand());
-        registerCommand(new FillCommand());
         registerCommand(new GiveCommand());
         registerCommand(new KickCommand());
         registerCommand(new HelpCommand());
@@ -30,10 +29,8 @@ public class CommandRegistry {
         registerCommand(new MsgCommand());
         registerCommand(new PublishCommand());
         registerCommand(new SayCommand());
-        registerCommand(new SetblockCommand());
         registerCommand(new TellrawCommand());
         registerCommand(new PlaysoundCommand());
-        registerCommand(new TimeCommand());
     }
 
     public void unregisterCommand(Command cmd) {

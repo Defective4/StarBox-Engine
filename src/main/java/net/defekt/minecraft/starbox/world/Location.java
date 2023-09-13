@@ -1,7 +1,5 @@
 package net.defekt.minecraft.starbox.world;
 
-import java.util.Objects;
-
 public class Location {
     private final double x, y, z;
 
@@ -33,28 +31,5 @@ public class Location {
 
     public double getZ() {
         return z;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Location location = (Location) o;
-        return Double.compare(location.x, x) == 0 && Double.compare(location.y, y) == 0 && Double.compare(location.z,
-                                                                                                          z) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y, z);
-    }
-
-    @Override
-    public String toString() {
-        return "Location{" + "x=" + x + ", y=" + y + ", z=" + z + '}';
-    }
-
-    public Location toChunkLocation() {
-        return new Location(getBlockX() % 16, getBlockY(), getBlockZ() % 16);
     }
 }

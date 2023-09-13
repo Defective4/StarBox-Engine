@@ -10,7 +10,6 @@ import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacke
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayDisconnectPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.ServerboundPacket;
-import net.defekt.minecraft.starbox.world.World;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -56,10 +55,6 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public World getWorld() {
-        return getServer().getWorld();
     }
 
     @Override
