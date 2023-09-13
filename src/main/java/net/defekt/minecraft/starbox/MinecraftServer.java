@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import dev.dewy.nbt.Nbt;
 import dev.dewy.nbt.api.registry.TagTypeRegistry;
 import dev.dewy.nbt.tags.collection.CompoundTag;
+import net.defekt.minecraft.starbox.command.CommandRegistry;
 import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.network.Connection;
@@ -41,6 +42,12 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     private final Timer timer = new Timer(true);
 
     private final World world;
+
+    private final CommandRegistry commandRegistry = new CommandRegistry(this);
+
+    public CommandRegistry getCommandRegistry() {
+        return commandRegistry;
+    }
 
     public MinecraftServer(String host, int port) throws IOException {
         srv = host == null ? new ServerSocket(port) : new ServerSocket(port, 50, InetAddress.getByName(host));
@@ -130,11 +137,7 @@ public class MinecraftServer implements AutoCloseable, OpenState {
 
     public void broadcastMessage(ChatComponent message) {
         for (Connection con : getOnlineConnections()) {
-            try {
-                con.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            con.sendMessage(message);
         }
     }
 

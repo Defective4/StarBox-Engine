@@ -42,10 +42,13 @@ public abstract class Connection {
         this.announcedHost = announcedHost;
     }
 
-    public abstract void sendPacket(ClientboundPacket packet) throws IOException;
+    public abstract void sendPacket(ClientboundPacket packet);
 
-    public void sendMessage(ChatComponent message) throws IOException {
-        sendPacket(new ServerPlayChatMessagePacket(message, ServerPlayChatMessagePacket.Position.CHAT, null));
+    public void sendMessage(ChatComponent message) {
+        try {
+            sendPacket(new ServerPlayChatMessagePacket(message, ServerPlayChatMessagePacket.Position.CHAT, null));
+        } catch (IOException ignored) {
+        }
     }
 
     public int getAnnouncedPort() {

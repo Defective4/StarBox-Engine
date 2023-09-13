@@ -4,7 +4,6 @@ import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.OpenState;
 import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.DataTypes;
-import net.defekt.minecraft.starbox.inventory.Inventory;
 import net.defekt.minecraft.starbox.inventory.PlayerInventory;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
@@ -26,7 +25,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
 
     private final CorePacketHandler coreHandler;
 
-    private final Inventory inventory = new PlayerInventory(this);
+    private final PlayerInventory inventory = new PlayerInventory(this);
 
     private GameState gameState = GameState.HANDSHAKING;
 
@@ -42,7 +41,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         return Collections.singleton(coreHandler);
     }
 
-    public Inventory getInventory() {
+    public PlayerInventory getInventory() {
         return inventory;
     }
 
@@ -56,8 +55,20 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     }
 
     @Override
-    public void sendPacket(ClientboundPacket packet) throws IOException {
-        if (isOpen()) outputStream.write(packet.getData());
+    public void sendPacket(ClientboundPacket packet) {
+        if (isOpen()) {
+            try {
+                outputStream.write(packet.getData());
+            } catch (IOException e) {
+                try {
+                    disconnect(new ChatComponent.Builder()
+                                       .setText(e.toString())
+                                       .build());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override

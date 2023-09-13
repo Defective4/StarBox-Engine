@@ -92,7 +92,13 @@ public class ChatComponent {
         }
 
         public ChatComponent build() {
-            return new ChatComponent(text, translate, color, extra, with, hoverEvent, clickEvent);
+            return new ChatComponent(text,
+                                     translate,
+                                     color,
+                                     extra,
+                                     with,
+                                     hoverEvent,
+                                     clickEvent);
         }
     }
 

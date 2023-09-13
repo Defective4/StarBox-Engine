@@ -12,6 +12,10 @@ public class ItemStack {
 
     public ItemStack(Material type, int count) {
         this.type = type;
+        if (count <= 0) {
+            count = 1;
+            type = Material.AIR;
+        }
         this.count = count;
         nbt = null;
     }

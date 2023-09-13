@@ -16,6 +16,14 @@ public class Inventory {
         return items.getOrDefault(slot, new ItemStack(Material.AIR));
     }
 
+    public int clear() {
+        int size = 0;
+        for(ItemStack item : items.values())
+            size += item.getCount();
+        items.clear();
+        return size;
+    }
+
     public void setItem(int slot, ItemStack item) {
         if (slot >= maxSize) return;
         if (item == null || item.getType() == Material.AIR) items.remove(slot);

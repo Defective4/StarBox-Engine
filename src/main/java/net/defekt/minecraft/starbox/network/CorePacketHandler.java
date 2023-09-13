@@ -1,6 +1,7 @@
 package net.defekt.minecraft.starbox.network;
 
 import net.defekt.minecraft.starbox.MinecraftServer;
+import net.defekt.minecraft.starbox.command.Command;
 import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.GameMode;
 import net.defekt.minecraft.starbox.data.PlayerProfile;
@@ -38,6 +39,34 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
         String message = packet.getMessage();
         if (message.length() > 256 || message.contains("§")) {
             connection.sendMessage(new ChatComponent.Builder().setTranslate("chat.cannotSend").setColor("red").build());
+            return;
+        }
+
+        if (message.startsWith("/")) {
+            String[] commandData = message.substring(1).split(" ");
+            String command = commandData[0].toLowerCase();
+            String[] args = Arrays.copyOfRange(commandData, 1, commandData.length);
+
+            Command cmd = connection.getServer().getCommandRegistry().getCommand(command);
+            boolean success;
+            if (cmd != null) success = cmd.execute(connection, command, args);
+            else success = false;
+            if(!success) {
+                connection.sendMessage(new ChatComponent.Builder()
+                                               .setColor("red")
+                                               .setTranslate("command.unknown.command")
+                                               .build());
+                connection.sendMessage(new ChatComponent.Builder()
+                                               .setColor("gray")
+                                               .setText("/")
+                                               .setExtra(new ChatComponent[] {
+                                                       new ChatComponent.Builder().setColor("red")
+                                                               .setText(String.join(" ", commandData)).build(),
+                                                       new ChatComponent.Builder().setColor("red")
+                                                               .setTranslate("command.context.here")
+                                                               .build()
+                                               }).build());
+            }
             return;
         }
 
