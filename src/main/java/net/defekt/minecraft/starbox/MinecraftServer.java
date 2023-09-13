@@ -123,7 +123,14 @@ public class MinecraftServer implements AutoCloseable, OpenState {
                                                            con.getProfile()));
             broadcastMessage(new ChatComponent.Builder().setColor("yellow")
                                                         .setTranslate("multiplayer.player.joined")
-                                                        .addWith(ChatComponent.fromString(con.getProfile().getName()))
+                                                        .addWith(new ChatComponent.Builder().setHoverEvent(ChatComponent.fromString(
+                                                                                                    "Click to send a private message"))
+                                                                                            .setClickEvent(ChatComponent.Builder.ClickEventType.SUGGEST_COMMAND,
+                                                                                                           "/msg " + con.getProfile()
+                                                                                                                        .getName())
+                                                                                            .setText(con.getProfile()
+                                                                                                        .getName())
+                                                                                            .build())
                                                         .build());
         } catch (IOException e) {
             e.printStackTrace();
