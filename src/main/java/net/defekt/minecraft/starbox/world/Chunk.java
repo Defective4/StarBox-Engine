@@ -50,18 +50,20 @@ public class Chunk {
             int section = Math.floorDiv(loc.getBlockY(), 16);
             if (!sectioned.containsKey(section)) sectioned.put(section, new ArrayList<>());
             BlockChangeEntry cEntry = new BlockChangeEntry(loc.getBlockX(),
-                                                          loc.getBlockY() % 16,
-                                                          loc.getBlockZ(),
-                                                          state.getType().getMinState() + state.getStateOffset());
+                                                           loc.getBlockY() % 16,
+                                                           loc.getBlockZ(),
+                                                           state.getType().getMinState() + state.getStateOffset());
             sectioned.get(section).add(cEntry);
         }
 
-        for(Map.Entry<Integer, List<BlockChangeEntry>> entry : sectioned.entrySet()) {
+        for (Map.Entry<Integer, List<BlockChangeEntry>> entry : sectioned.entrySet()) {
             try {
-                MinecraftServer.getServer().broadcastPacket(new ServerPlayMultiBlockChangePacket(
-                        getX(),
-                        entry.getKey(),
-                        getZ(), entry.getValue().toArray(new BlockChangeEntry[0])));
+                MinecraftServer.getServer()
+                               .broadcastPacket(new ServerPlayMultiBlockChangePacket(getX(),
+                                                                                     entry.getKey(),
+                                                                                     getZ(),
+                                                                                     entry.getValue()
+                                                                                          .toArray(new BlockChangeEntry[0])));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

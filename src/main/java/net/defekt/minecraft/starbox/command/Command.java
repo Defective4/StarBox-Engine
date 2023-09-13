@@ -72,10 +72,7 @@ public abstract class Command {
     }
 
     public void printUsage(PlayerConnection connection) {
-        connection.sendMessage(new ChatComponent.Builder()
-                                       .setColor("red")
-                                       .setText(getUsage())
-                                       .build());
+        connection.sendMessage(new ChatComponent.Builder().setColor("red").setText(getUsage()).build());
     }
 
     public String getUsage() {

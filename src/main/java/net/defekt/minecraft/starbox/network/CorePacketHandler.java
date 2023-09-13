@@ -51,21 +51,22 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
             boolean success;
             if (cmd != null) success = cmd.execute(connection, command, args);
             else success = false;
-            if(!success) {
-                connection.sendMessage(new ChatComponent.Builder()
-                                               .setColor("red")
-                                               .setTranslate("command.unknown.command")
-                                               .build());
-                connection.sendMessage(new ChatComponent.Builder()
-                                               .setColor("gray")
-                                               .setText("/")
-                                               .setExtra(new ChatComponent[] {
-                                                       new ChatComponent.Builder().setColor("red")
-                                                               .setText(String.join(" ", commandData)).build(),
-                                                       new ChatComponent.Builder().setColor("red")
-                                                               .setTranslate("command.context.here")
-                                                               .build()
-                                               }).build());
+            if (!success) {
+                connection.sendMessage(new ChatComponent.Builder().setColor("red")
+                                                                  .setTranslate("command.unknown.command")
+                                                                  .build());
+                connection.sendMessage(new ChatComponent.Builder().setColor("gray")
+                                                                  .setText("/")
+                                                                  .setExtra(new ChatComponent[]{
+                                                                          new ChatComponent.Builder().setColor("red")
+                                                                                                     .setText(String.join(
+                                                                                                             " ",
+                                                                                                             commandData)).build(),
+                                                                          new ChatComponent.Builder().setColor("red")
+                                                                                                     .setTranslate(
+                                                                                                             "command.context.here").build()
+                                                                  })
+                                                                  .build());
             }
             return;
         }

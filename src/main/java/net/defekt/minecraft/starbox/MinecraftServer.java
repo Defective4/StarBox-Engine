@@ -32,28 +32,14 @@ public class MinecraftServer implements AutoCloseable, OpenState {
 
     public static final int PROTOCOL = 754;
     public static final String VERSION = "StarBox 1.16.5";
-
+    private static MinecraftServer server;
     private final ServerSocket srv;
     private final ExecutorService pool = Executors.newCachedThreadPool();
-
     private final CompoundTag dimensionCodec;
-
     private final Map<UUID, Connection> onlineConnections = new ConcurrentHashMap<>();
     private final Timer timer = new Timer(true);
-
     private final World world;
-
     private final CommandRegistry commandRegistry = new CommandRegistry(this);
-
-    private static MinecraftServer server;
-
-    public CommandRegistry getCommandRegistry() {
-        return commandRegistry;
-    }
-
-    public static MinecraftServer getServer() {
-        return server;
-    }
 
     public MinecraftServer(String host, int port) throws IOException {
         server = this;
@@ -98,6 +84,14 @@ public class MinecraftServer implements AutoCloseable, OpenState {
                 }
             }
         }, 5000, 5000);
+    }
+
+    public static MinecraftServer getServer() {
+        return server;
+    }
+
+    public CommandRegistry getCommandRegistry() {
+        return commandRegistry;
     }
 
     public World getWorld() {

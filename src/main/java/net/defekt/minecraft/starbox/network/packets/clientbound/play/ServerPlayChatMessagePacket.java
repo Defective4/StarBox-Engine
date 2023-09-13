@@ -10,6 +10,15 @@ import java.util.UUID;
 
 public class ServerPlayChatMessagePacket extends ClientboundPacket {
 
+    public ServerPlayChatMessagePacket(ChatComponent message, Position pos, UUID sender) throws IOException {
+        super(0x0E);
+        if (sender == null) sender = new UUID(0, 0);
+        DataOutputStream wrapper = getWrapper();
+        DataTypes.writeVarString(wrapper, message.toJson());
+        wrapper.writeByte(pos.getId());
+        DataTypes.writeUUID(wrapper, sender);
+    }
+
     public enum Position {
         CHAT(0),
         SYSTEM(1),
@@ -22,14 +31,5 @@ public class ServerPlayChatMessagePacket extends ClientboundPacket {
         public int getId() {
             return id;
         }
-    }
-
-    public ServerPlayChatMessagePacket(ChatComponent message, Position pos, UUID sender) throws IOException {
-        super(0x0E);
-        if (sender == null) sender = new UUID(0, 0);
-        DataOutputStream wrapper = getWrapper();
-        DataTypes.writeVarString(wrapper, message.toJson());
-        wrapper.writeByte(pos.getId());
-        DataTypes.writeUUID(wrapper, sender);
     }
 }

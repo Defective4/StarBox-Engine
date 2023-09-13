@@ -16,6 +16,48 @@ public class ChatComponent {
     private final JsonObject hoverEvent;
     private final JsonObject clickEvent;
 
+    private ChatComponent(String text, String translate, String color, ChatComponent[] extra, ChatComponent[] with, JsonObject hoverEvent, JsonObject clickEvent) {
+        this.text = text;
+        this.translate = translate;
+        this.color = color;
+        this.extra = extra;
+        this.with = with;
+        this.hoverEvent = hoverEvent;
+        this.clickEvent = clickEvent;
+    }
+
+    public static ChatComponent fromString(String text) {
+        return new Builder().setText(text).translateColors().build();
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getTranslate() {
+        return translate;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public ChatComponent[] getExtra() {
+        return extra;
+    }
+
+    public ChatComponent[] getWith() {
+        return with;
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
+
+    public JsonElement toJsonElement() {
+        return new Gson().toJsonTree(this);
+    }
+
     public static class Builder {
 
         private String text;
@@ -70,13 +112,6 @@ public class ChatComponent {
             return this;
         }
 
-        public enum ClickEventType {
-            OPEN_URL,
-            RUN_COMMAND,
-            SUGGEST_COMMAND,
-            COPY_TO_CLIPBOARD
-        }
-
         public Builder setClickEvent(ClickEventType event, String value) {
             clickEvent = new JsonObject();
             clickEvent.add("action", new JsonPrimitive(event.name().toLowerCase()));
@@ -92,56 +127,15 @@ public class ChatComponent {
         }
 
         public ChatComponent build() {
-            return new ChatComponent(text,
-                                     translate,
-                                     color,
-                                     extra,
-                                     with,
-                                     hoverEvent,
-                                     clickEvent);
+            return new ChatComponent(text, translate, color, extra, with, hoverEvent, clickEvent);
         }
-    }
 
-    private ChatComponent(String text, String translate, String color, ChatComponent[] extra, ChatComponent[] with, JsonObject hoverEvent, JsonObject clickEvent) {
-        this.text = text;
-        this.translate = translate;
-        this.color = color;
-        this.extra = extra;
-        this.with = with;
-        this.hoverEvent = hoverEvent;
-        this.clickEvent = clickEvent;
-    }
-
-    public static ChatComponent fromString(String text) {
-        return new Builder().setText(text).translateColors().build();
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public String getTranslate() {
-        return translate;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public ChatComponent[] getExtra() {
-        return extra;
-    }
-
-    public ChatComponent[] getWith() {
-        return with;
-    }
-
-    public String toJson() {
-        return new Gson().toJson(this);
-    }
-
-    public JsonElement toJsonElement() {
-        return new Gson().toJsonTree(this);
+        public enum ClickEventType {
+            OPEN_URL,
+            RUN_COMMAND,
+            SUGGEST_COMMAND,
+            COPY_TO_CLIPBOARD
+        }
     }
 
 }

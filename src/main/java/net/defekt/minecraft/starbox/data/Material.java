@@ -1149,6 +1149,18 @@ public enum Material {
         this.maxState = maxState;
     }
 
+    public static Material getItemForID(int id) {
+        for (Material mat : values())
+            if (mat.getId() == id) return mat;
+        return null;
+    }
+
+    public static Material getItemForID(String id, boolean hasToBeBlock) {
+        for (Material mat : values())
+            if ((!hasToBeBlock || mat.isBlock) && mat.getNamespacedID().equalsIgnoreCase(id)) return mat;
+        return null;
+    }
+
     public int getId() {
         return id;
     }
@@ -1179,17 +1191,5 @@ public enum Material {
 
     public int getMaxState() {
         return maxState;
-    }
-
-    public static Material getItemForID(int id) {
-        for (Material mat : values())
-            if (mat.getId() == id) return mat;
-        return null;
-    }
-
-    public static Material getItemForID(String id, boolean hasToBeBlock) {
-        for (Material mat : values())
-            if ((!hasToBeBlock || mat.isBlock) && mat.getNamespacedID().equalsIgnoreCase(id)) return mat;
-        return null;
     }
 }

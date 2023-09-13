@@ -11,6 +11,8 @@ public class Inventory {
     private final int maxSize;
     private int reservedSlots = 0;
 
+    protected Inventory(int maxSize) {this.maxSize = maxSize;}
+
     public int getReservedSlots() {
         return reservedSlots;
     }
@@ -18,8 +20,6 @@ public class Inventory {
     public void setReservedSlots(int reservedSlots) {
         this.reservedSlots = reservedSlots;
     }
-
-    protected Inventory(int maxSize) {this.maxSize = maxSize;}
 
     public ItemStack getItem(int slot) {
         return items.getOrDefault(slot, new ItemStack(Material.AIR));

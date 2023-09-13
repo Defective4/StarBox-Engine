@@ -10,25 +10,6 @@ import java.io.IOException;
 
 public class ServerPlayPlayerInfoPacket extends ClientboundPacket {
 
-    public static enum Action {
-        ADD_PLAYER(0),
-        UPDATE_GAMEMODE(1),
-        UPDATE_LATENCY(2),
-        UPDATE_DISPLAY_NAME(3),
-        REMOVE_PLAYER(4);
-
-        private final int id;
-
-        private Action(int i) {
-            id = i;
-        }
-
-        public int getId() {
-            return id;
-        }
-    }
-
-
     public ServerPlayPlayerInfoPacket(Action action, PlayerProfile... profiles) throws IOException {
         super(0x32);
 
@@ -70,6 +51,25 @@ public class ServerPlayPlayerInfoPacket extends ClientboundPacket {
                     break;
                 }
             }
+        }
+    }
+
+
+    public static enum Action {
+        ADD_PLAYER(0),
+        UPDATE_GAMEMODE(1),
+        UPDATE_LATENCY(2),
+        UPDATE_DISPLAY_NAME(3),
+        REMOVE_PLAYER(4);
+
+        private final int id;
+
+        private Action(int i) {
+            id = i;
+        }
+
+        public int getId() {
+            return id;
         }
     }
 }

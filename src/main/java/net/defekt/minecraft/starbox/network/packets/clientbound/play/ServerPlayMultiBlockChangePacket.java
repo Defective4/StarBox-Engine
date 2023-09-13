@@ -8,6 +8,17 @@ import java.io.IOException;
 
 public class ServerPlayMultiBlockChangePacket extends ClientboundPacket {
 
+    public ServerPlayMultiBlockChangePacket(int cx, int cy, int cz, BlockChangeEntry... blocks) throws IOException {
+        super(0x3B);
+        DataOutputStream wrapper = getWrapper();
+        wrapper.writeLong(((long) (cx & 0x3FFFFF) << 42) | (cy & 0xFFFFF) | ((long) (cz & 0x3FFFFF) << 20));
+        wrapper.writeBoolean(false);
+        DataTypes.writeVarInt(wrapper, blocks.length);
+        for (BlockChangeEntry entry : blocks) {
+            DataTypes.writeVarLong(wrapper, entry.getEncoded());
+        }
+    }
+
     public static class BlockChangeEntry {
         private final int x, y, z, id;
 
@@ -36,17 +47,6 @@ public class ServerPlayMultiBlockChangePacket extends ClientboundPacket {
 
         public int getId() {
             return id;
-        }
-    }
-
-    public ServerPlayMultiBlockChangePacket(int cx, int cy, int cz, BlockChangeEntry... blocks) throws IOException {
-        super(0x3B);
-        DataOutputStream wrapper = getWrapper();
-        wrapper.writeLong(((long) (cx & 0x3FFFFF) << 42) | (cy & 0xFFFFF) | ((long) (cz & 0x3FFFFF) << 20));
-        wrapper.writeBoolean(false);
-        DataTypes.writeVarInt(wrapper, blocks.length);
-        for (BlockChangeEntry entry : blocks) {
-            DataTypes.writeVarLong(wrapper, entry.getEncoded());
         }
     }
 }
