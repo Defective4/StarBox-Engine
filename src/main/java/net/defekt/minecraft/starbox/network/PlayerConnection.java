@@ -7,6 +7,7 @@ import net.defekt.minecraft.starbox.data.DataTypes;
 import net.defekt.minecraft.starbox.inventory.PlayerInventory;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayDisconnectPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.ServerboundPacket;
 import net.defekt.minecraft.starbox.world.World;
@@ -46,13 +47,15 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         return inventory;
     }
 
-    public void disconnect(ChatComponent reason) throws Exception {
+    public void disconnect(ChatComponent reason) {
         try {
             if (gameState == GameState.LOGIN) {
                 sendPacket(new ServerStatusResponsePacket(reason.toJson()));
-            }
-        } catch (Exception ignored) {}
-        close();
+            } else if (gameState == GameState.PLAY) sendPacket(new ServerPlayDisconnectPacket(reason));
+            close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public World getWorld() {

@@ -10,10 +10,7 @@ import net.defekt.minecraft.starbox.network.PlayerConnection;
 import net.defekt.minecraft.starbox.world.BlockState;
 import net.defekt.minecraft.starbox.world.Location;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandRegistry {
     private final List<Command> registeredCommands = new ArrayList<>();
@@ -115,6 +112,29 @@ public class CommandRegistry {
                 return true;
             }
         }.setArgs("<target> <item> [<count>]"));
+
+        registerCommand(new Command("kick", "minecraft.command.kick") {
+            @Override
+            public boolean execute(PlayerConnection player, String command, String[] args) {
+                if (args.length > 0) {
+                    PlayerConnection target = player.getServer().getPlayer(args[0]);
+                    if (target != null) {
+                        ChatComponent reason = args.length > 1 ?
+                                ChatComponent.fromString(String.join(" ", Arrays.copyOfRange(args, 1, args.length))) :
+                                new ChatComponent.Builder().setTranslate("multiplayer.disconnect.kicked").build();
+                        target.disconnect(reason);
+                        player.sendMessage(new ChatComponent.Builder().setTranslate("commands.kick.success")
+                                                                      .addWith(ChatComponent.fromString(target.getProfile()
+                                                                                                              .getName()))
+                                                                      .addWith(reason)
+                                                                      .build());
+                        return true;
+                    }
+                }
+                printUsage(player);
+                return true;
+            }
+        }.setArgs("<target> [<reason>]"));
     }
 
     public void unregisterCommand(Command cmd) {

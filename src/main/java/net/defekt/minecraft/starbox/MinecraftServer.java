@@ -130,6 +130,20 @@ public class MinecraftServer implements AutoCloseable, OpenState {
         }
     }
 
+    public PlayerConnection getPlayer(String name) {
+        for (Connection con : getOnlineConnections())
+            if (con instanceof PlayerConnection && con.getProfile().getName().equalsIgnoreCase(name))
+                return (PlayerConnection) con;
+        return null;
+    }
+
+    public PlayerConnection getPlayer(UUID uid) {
+        for (Connection con : getOnlineConnections())
+            if (con instanceof PlayerConnection && con.getProfile().getUuid().equals(uid))
+                return (PlayerConnection) con;
+        return null;
+    }
+
     public Connection getConnection(String name) {
         for (Connection con : getOnlineConnections())
             if (con.getProfile().getName().equalsIgnoreCase(name)) return con;
