@@ -5,6 +5,10 @@ import net.defekt.minecraft.starbox.data.ChatComponent;
 import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayChatMessagePacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlaySoundEffectPacket;
+import net.defekt.minecraft.starbox.sound.Sound;
+import net.defekt.minecraft.starbox.sound.SoundCategory;
+import net.defekt.minecraft.starbox.world.Location;
 
 import java.io.IOException;
 
@@ -47,8 +51,19 @@ public abstract class Connection {
     public void sendMessage(ChatComponent message) {
         try {
             sendPacket(new ServerPlayChatMessagePacket(message, ServerPlayChatMessagePacket.Position.CHAT, null));
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
+    }
+
+    public void playSound(Sound sound, SoundCategory category, Location loc, float volume, float pitch) {
+        try {
+            sendPacket(new ServerPlaySoundEffectPacket(sound,
+                                                       category,
+                                                       loc.getBlockX(),
+                                                       loc.getBlockY(),
+                                                       loc.getBlockZ(),
+                                                       volume,
+                                                       pitch));
+        } catch (IOException ignored) {}
     }
 
     public int getAnnouncedPort() {
