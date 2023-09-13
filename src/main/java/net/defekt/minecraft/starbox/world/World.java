@@ -1,12 +1,43 @@
 package net.defekt.minecraft.starbox.world;
 
+import net.defekt.minecraft.starbox.MinecraftServer;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayTimePacket;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class World {
     private final Map<Location, Chunk> chunks = new ConcurrentHashMap<>();
+
+    private final long created = System.currentTimeMillis();
+    private long time = 6000;
+
+    public static String formatTime(long time) {
+        long t = time + 6000;
+        int hours = (int) Math.floorDiv(t, 1000) % 24-1;
+        int seconds = (int) (Math.floorMod(t, 1000) * 0.6 / 10) + (hours * 3600);
+        return new SimpleDateFormat("HH:ss").format(new Date(seconds * 1000L));
+    }
+
+    public long getAge() {
+        return (System.currentTimeMillis() - created) / 50;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = Math.abs(time);
+        try {
+            MinecraftServer.getServer().broadcastPacket(new ServerPlayTimePacket(getAge(), -getTime()));
+        } catch (IOException ignored) {}
+    }
 
     private World() {}
 
