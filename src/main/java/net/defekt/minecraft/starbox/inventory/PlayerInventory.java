@@ -12,6 +12,7 @@ public class PlayerInventory extends Inventory {
 
     public PlayerInventory(PlayerConnection player) {
         super(46);
+        setReservedSlots(9);
         this.player = player;
     }
 

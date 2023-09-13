@@ -9,6 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Inventory {
     private final Map<Integer, ItemStack> items = new ConcurrentHashMap<>();
     private final int maxSize;
+    private int reservedSlots = 0;
+
+    public int getReservedSlots() {
+        return reservedSlots;
+    }
+
+    public void setReservedSlots(int reservedSlots) {
+        this.reservedSlots = reservedSlots;
+    }
 
     protected Inventory(int maxSize) {this.maxSize = maxSize;}
 
@@ -18,10 +27,21 @@ public class Inventory {
 
     public int clear() {
         int size = 0;
-        for(ItemStack item : items.values())
+        for (ItemStack item : items.values())
             size += item.getCount();
         items.clear();
         return size;
+    }
+
+    public int getFreeSlot() {
+        int slot = -1;
+        for (int s = reservedSlots; s < getSize(); s++) {
+            if (!items.containsKey(s)) {
+                slot = s;
+                break;
+            }
+        }
+        return slot;
     }
 
     public void setItem(int slot, ItemStack item) {

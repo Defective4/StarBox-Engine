@@ -1187,9 +1187,9 @@ public enum Material {
         return null;
     }
 
-    public static Material getItemForID(String id) {
+    public static Material getItemForID(String id, boolean hasToBeBlock) {
         for (Material mat : values())
-            if (mat.isBlock && mat.getNamespacedID().equalsIgnoreCase(id)) return mat;
+            if ((!hasToBeBlock || mat.isBlock) && mat.getNamespacedID().equalsIgnoreCase(id)) return mat;
         return null;
     }
 }
