@@ -45,11 +45,18 @@ public class MinecraftServer implements AutoCloseable, OpenState {
 
     private final CommandRegistry commandRegistry = new CommandRegistry(this);
 
+    private static MinecraftServer server;
+
     public CommandRegistry getCommandRegistry() {
         return commandRegistry;
     }
 
+    public static MinecraftServer getServer() {
+        return server;
+    }
+
     public MinecraftServer(String host, int port) throws IOException {
+        server = this;
         srv = host == null ? new ServerSocket(port) : new ServerSocket(port, 50, InetAddress.getByName(host));
 
         world = World.loadWorld();

@@ -9,6 +9,7 @@ import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.ServerboundPacket;
+import net.defekt.minecraft.starbox.world.World;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -54,6 +55,10 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         close();
     }
 
+    public World getWorld() {
+        return getServer().getWorld();
+    }
+
     @Override
     public void sendPacket(ClientboundPacket packet) {
         if (isOpen()) {
@@ -61,9 +66,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
                 outputStream.write(packet.getData());
             } catch (IOException e) {
                 try {
-                    disconnect(new ChatComponent.Builder()
-                                       .setText(e.toString())
-                                       .build());
+                    disconnect(new ChatComponent.Builder().setText(e.toString()).build());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

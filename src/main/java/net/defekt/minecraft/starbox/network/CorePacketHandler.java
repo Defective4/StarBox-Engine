@@ -35,7 +35,7 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
     public CorePacketHandler(PlayerConnection connection) {this.connection = connection;}
 
     @PacketHandlerMethod
-    public void onMessageReceive(ClientPlayChatMessagePacket packet) throws IOException {
+    public void onMessageReceive(ClientPlayChatMessagePacket packet) {
         String message = packet.getMessage();
         if (message.length() > 256 || message.contains("§")) {
             connection.sendMessage(new ChatComponent.Builder().setTranslate("chat.cannotSend").setColor("red").build());
@@ -154,7 +154,7 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                       .add(new BlockChangeEntry(block.getLocation().getBlockX(),
                                                 block.getLocation().getBlockY() % 16,
                                                 block.getLocation().getBlockZ(),
-                                                block.getType().getMinState() + block.getBlockState()));
+                                                block.getType().getMinState() + block.getStateOffset()));
             }
             for (Map.Entry<Integer, List<BlockChangeEntry>> entry : blocks.entrySet()) {
                 connection.sendPacket(new ServerPlayMultiBlockChangePacket(chk.getX(),

@@ -48,4 +48,13 @@ public class Location {
     public int hashCode() {
         return Objects.hash(x, y, z);
     }
+
+    @Override
+    public String toString() {
+        return "Location{" + "x=" + x + ", y=" + y + ", z=" + z + '}';
+    }
+
+    public Location toChunkLocation() {
+        return new Location(getBlockX() % 16, getBlockY(), getBlockZ() % 16);
+    }
 }

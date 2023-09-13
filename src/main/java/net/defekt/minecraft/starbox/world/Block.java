@@ -27,7 +27,16 @@ public class Block {
         return chunk;
     }
 
-    public int getBlockState() {
+    public int getStateOffset() {
         return blockState;
+    }
+
+    public BlockState getBlockState() {
+        return new BlockState(type, blockState);
+    }
+
+    @Override
+    public String toString() {
+        return "Block{" + "location=" + location + ", type=" + type + ", blockState=" + blockState + '}';
     }
 }
