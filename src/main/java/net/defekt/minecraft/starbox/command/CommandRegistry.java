@@ -31,6 +31,7 @@ public class CommandRegistry {
         registerCommand(new PublishCommand());
         registerCommand(new SayCommand());
         registerCommand(new SetblockCommand());
+        registerCommand(new TellrawCommand());
     }
 
     public void unregisterCommand(Command cmd) {
