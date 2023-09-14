@@ -7,6 +7,7 @@ import net.defekt.minecraft.starbox.data.DataTypes;
 import net.defekt.minecraft.starbox.inventory.PlayerInventory;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayUpdateLightPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayMultiBlockChangePacket.BlockChangeEntry;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
@@ -79,6 +80,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
                 for (int z = sourceZ; z <= targetZ; z++) {
                     Chunk chk = getWorld().getChunkAt(x, z);
                     if (viewingChunks.contains(chk)) continue;
+                    sendPacket(new ServerPlayUpdateLightPacket(x, z));
                     sendPacket(new ServerPlayEmptyChunkPacket(x, z));
                     viewingChunks.add(chk);
 

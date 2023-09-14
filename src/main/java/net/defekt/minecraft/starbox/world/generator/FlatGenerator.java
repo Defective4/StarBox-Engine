@@ -18,9 +18,9 @@ public class FlatGenerator extends ChunkGenerator {
     public Collection<Block> generateChunk(Chunk chk) {
         List<Block> blocks = new ArrayList<>();
         for (int x = 0; x < 16; x++)
-            for (int y = 12; y < 16; y++)
+            for (int y = 1; y < 4; y++)
                 for (int z = 0; z < 16; z++) {
-                    Material type = y == 12 ? Material.BEDROCK : y == 15 ? Material.GRASS_BLOCK : Material.DIRT;
+                    Material type = y == 1 ? Material.BEDROCK : y == 3 ? Material.GRASS_BLOCK : Material.DIRT;
                     blocks.add(new Block(new Location(x, y, z), type, type == Material.GRASS_BLOCK ? 1 : 0));
                 }
         return blocks;

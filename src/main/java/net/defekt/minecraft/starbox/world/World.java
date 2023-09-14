@@ -2,6 +2,7 @@ package net.defekt.minecraft.starbox.world;
 
 import net.defekt.minecraft.starbox.world.generator.ChunkGenerator;
 import net.defekt.minecraft.starbox.world.generator.FlatGenerator;
+import net.defekt.minecraft.starbox.world.generator.NoiseGenerator;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class World {
     private final long seed = System.currentTimeMillis();
     private final Map<Location, Chunk> chunks = new ConcurrentHashMap<>();
-    private final ChunkGenerator generator = new FlatGenerator(this);
+    private final ChunkGenerator generator = new NoiseGenerator(this);
 
     private World() {
 
