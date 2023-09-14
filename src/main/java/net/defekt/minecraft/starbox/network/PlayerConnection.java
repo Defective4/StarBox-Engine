@@ -30,8 +30,10 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     private final CorePacketHandler coreHandler;
 
     private final PlayerInventory inventory = new PlayerInventory(this);
-
+    private final int renderDistance = 10; // TODO
+    private final List<Chunk> viewingChunks = new ArrayList<>();
     private GameState gameState = GameState.HANDSHAKING;
+    private Location position = new Location(0, 0, 0);
 
     public PlayerConnection(MinecraftServer server, Socket socket) throws IOException {
         super(server);
@@ -41,8 +43,6 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         coreHandler = new CorePacketHandler(this);
     }
 
-    private Location position = new Location(0, 0, 0);
-
     public Location getPosition() {
         return position;
     }
@@ -50,9 +50,6 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     protected void setPosition(Location position) {
         this.position = position;
     }
-
-    private final int renderDistance = 10; // TODO
-    private final List<Chunk> viewingChunks = new ArrayList<>();
 
     public void loadTerrain() {
         int cx = Math.floorDiv(position.getBlockX(), 16);

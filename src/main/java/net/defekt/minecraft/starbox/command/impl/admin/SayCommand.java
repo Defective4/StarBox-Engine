@@ -21,7 +21,7 @@ public class SayCommand extends Command {
                                                                                                    .setClickEvent(
                                                                                                            ChatComponent.Builder.ClickEventType.SUGGEST_COMMAND,
                                                                                                            "/msg " + player.getProfile()
-                                                                                                                           .getName()+" ")
+                                                                                                                           .getName() + " ")
                                                                                                    .setText(player.getProfile()
                                                                                                                   .getName())
                                                                                                    .build())

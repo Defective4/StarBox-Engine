@@ -17,7 +17,7 @@ public class ServerPlayDeclareCommandsPacket extends ClientboundPacket {
         for (int x = 0; x < cmds.length; x++)
             DataTypes.writeVarInt(wrapper, x + 1);
 
-        for(Command cmd : cmds) {
+        for (Command cmd : cmds) {
             wrapper.writeByte(0x01 | 0x04);
             wrapper.writeByte(0);
             DataTypes.writeVarString(wrapper, cmd.getName());

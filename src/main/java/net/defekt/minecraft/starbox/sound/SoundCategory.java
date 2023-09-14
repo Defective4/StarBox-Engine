@@ -16,13 +16,13 @@ public enum SoundCategory {
 
     SoundCategory(int id) {this.id = id;}
 
-    public int getId() {
-        return id;
-    }
-
     public static SoundCategory getOrDefault(String name) {
         for (SoundCategory cat : values())
             if (cat.name().equalsIgnoreCase(name)) return cat;
         return MASTER;
+    }
+
+    public int getId() {
+        return id;
     }
 }

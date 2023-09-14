@@ -17,6 +17,10 @@ public class World {
 
     private World() {}
 
+    public static World createWorld() {
+        return new World();
+    }
+
     public void batchFillBlocks(Map<Location, BlockState> blocks) {
         Map<Chunk, List<Block>> chunked = new HashMap<>();
         for (Map.Entry<Location, BlockState> entry : blocks.entrySet()) {
@@ -44,10 +48,6 @@ public class World {
 
     public long getSeed() {
         return seed;
-    }
-
-    public static World createWorld() {
-        return new World();
     }
 
     @Override

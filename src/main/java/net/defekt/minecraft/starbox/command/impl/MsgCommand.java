@@ -15,25 +15,26 @@ public class MsgCommand extends Command {
 
     @Override
     public boolean execute(PlayerConnection player, String command, String[] args) {
-        if(args.length>1) {
+        if (args.length > 1) {
             PlayerConnection target = player.getServer().getPlayer(args[0]);
-            if(target!=null) {
+            if (target != null) {
                 String msg = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-                player.sendMessage(new ChatComponent.Builder()
-                                           .setTranslate("commands.message.display.outgoing")
-                                           .setColor("gray")
-                                           .setWith(new ChatComponent[] {
-                                                   ChatComponent.fromString(target.getProfile().getName()),
-                                                   new ChatComponent.Builder().setText(msg).build()
-                                           })
-                                           .build());
-                target.sendMessage(new ChatComponent.Builder()
-                                           .setTranslate("commands.message.display.incoming")
-                                           .setColor("gray")
-                                           .setWith(new ChatComponent[] {
-                                                   ChatComponent.fromString(player.getProfile().getName()),
-                                                   new ChatComponent.Builder().setText(msg).build()
-                                           }).build());
+                player.sendMessage(new ChatComponent.Builder().setTranslate("commands.message.display.outgoing")
+                                                              .setColor("gray")
+                                                              .setWith(new ChatComponent[]{
+                                                                      ChatComponent.fromString(target.getProfile()
+                                                                                                     .getName()),
+                                                                      new ChatComponent.Builder().setText(msg).build()
+                                                              })
+                                                              .build());
+                target.sendMessage(new ChatComponent.Builder().setTranslate("commands.message.display.incoming")
+                                                              .setColor("gray")
+                                                              .setWith(new ChatComponent[]{
+                                                                      ChatComponent.fromString(player.getProfile()
+                                                                                                     .getName()),
+                                                                      new ChatComponent.Builder().setText(msg).build()
+                                                              })
+                                                              .build());
                 return true;
             }
         }

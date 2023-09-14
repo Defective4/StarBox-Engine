@@ -15,6 +15,34 @@ public class Chunk {
     private final List<PlayerConnection> viewers = new ArrayList<>();
     private final int x, z;
 
+    private Chunk(int x, int z) {
+        this.x = x;
+        this.z = z;
+    }
+
+    public static Chunk generateChunk(int x, int z, ChunkGenerator generator) {
+        Chunk chk = new Chunk(x, z);
+        for (Block block : generator.generateChunk(chk)) {
+            chk.blocks.put(block.getBlockLocation(), block);
+        }
+        return chk;
+    }
+
+    public static Map<Integer, List<BlockChangeEntry>> convertToProtocol(Collection<Block> blocks) {
+        Map<Integer, List<BlockChangeEntry>> entries = new HashMap<>();
+        for (Block block : blocks) {
+            Location loc = block.getBlockLocation();
+            int y = Math.floorDiv(loc.getBlockY(), 16);
+            if (!entries.containsKey(y)) entries.put(y, new ArrayList<>());
+            BlockChangeEntry entry = new BlockChangeEntry(loc.getBlockX(),
+                                                          loc.getBlockY() % 16,
+                                                          loc.getBlockZ(),
+                                                          block.getState());
+            entries.get(y).add(entry);
+        }
+        return entries;
+    }
+
     public void addViewer(PlayerConnection player) {
         if (!viewers.contains(player)) viewers.add(player);
     }
@@ -31,11 +59,6 @@ public class Chunk {
         return !viewers.isEmpty();
     }
 
-    private Chunk(int x, int z) {
-        this.x = x;
-        this.z = z;
-    }
-
     public void broadcastPacketToViewers(ClientboundPacket packet) {
         for (PlayerConnection viewer : viewers)
             viewer.sendPacket(packet);
@@ -44,24 +67,17 @@ public class Chunk {
     public void batchSetBlocks(Collection<Block> blocks) {
         for (Block block : blocks)
             this.blocks.put(block.getBlockLocation(), block);
-        for(Map.Entry<Integer, List<BlockChangeEntry>> entry : convertToProtocol(blocks).entrySet()) {
+        for (Map.Entry<Integer, List<BlockChangeEntry>> entry : convertToProtocol(blocks).entrySet()) {
             try {
-                broadcastPacketToViewers(new ServerPlayMultiBlockChangePacket(
-                        getX(),
-                        entry.getKey(),
-                        getZ(), entry.getValue().toArray(new BlockChangeEntry[0])));
+                broadcastPacketToViewers(new ServerPlayMultiBlockChangePacket(getX(),
+                                                                              entry.getKey(),
+                                                                              getZ(),
+                                                                              entry.getValue()
+                                                                                   .toArray(new BlockChangeEntry[0])));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static Chunk generateChunk(int x, int z, ChunkGenerator generator) {
-        Chunk chk = new Chunk(x, z);
-        for (Block block : generator.generateChunk(chk)) {
-            chk.blocks.put(block.getBlockLocation(), block);
-        }
-        return chk;
     }
 
     public int getX() {
@@ -70,21 +86,6 @@ public class Chunk {
 
     public int getZ() {
         return z;
-    }
-
-    public static Map<Integer, List<BlockChangeEntry>> convertToProtocol(Collection<Block> blocks) {
-        Map<Integer, List<BlockChangeEntry>> entries = new HashMap<>();
-        for (Block block : blocks) {
-            Location loc = block.getBlockLocation();
-            int y = Math.floorDiv(loc.getBlockY(), 16);
-            if (!entries.containsKey(y)) entries.put(y, new ArrayList<>());
-            BlockChangeEntry entry = new BlockChangeEntry(loc.getBlockX(),
-                                                          loc.getBlockY() % 16,
-                                                          loc.getBlockZ(),
-                                                          block.getState());
-            entries.get(y).add(entry);
-        }
-        return entries;
     }
 
     @Override

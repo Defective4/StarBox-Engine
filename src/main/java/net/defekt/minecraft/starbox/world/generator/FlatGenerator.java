@@ -9,7 +9,6 @@ import net.defekt.minecraft.starbox.world.World;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 public class FlatGenerator extends ChunkGenerator {
     public FlatGenerator(World world) {super(world);}
