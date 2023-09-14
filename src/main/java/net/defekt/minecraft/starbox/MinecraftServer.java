@@ -15,6 +15,7 @@ import net.defekt.minecraft.starbox.network.PlayerConnection;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayKeepAlivePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
+import net.defekt.minecraft.starbox.world.Chunk;
 import net.defekt.minecraft.starbox.world.World;
 
 import java.io.*;
@@ -178,6 +179,7 @@ public class MinecraftServer implements AutoCloseable, OpenState {
                     } catch (EOFException ignored) {} catch (Exception e) {
                         e.printStackTrace();
                     } finally {
+                        world.dropViewer(lCon);
                         PlayerProfile prof = lCon.getProfile();
                         if (prof != null) {
                             onlineConnections.remove(prof.getUuid());

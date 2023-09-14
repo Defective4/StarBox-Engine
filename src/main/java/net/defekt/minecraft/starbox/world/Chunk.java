@@ -23,6 +23,14 @@ public class Chunk {
         viewers.remove(player);
     }
 
+    public List<PlayerConnection> getViewers() {
+        return new ArrayList<>(viewers);
+    }
+
+    public boolean hasViewers() {
+        return !viewers.isEmpty();
+    }
+
     private Chunk(int x, int z) {
         this.x = x;
         this.z = z;

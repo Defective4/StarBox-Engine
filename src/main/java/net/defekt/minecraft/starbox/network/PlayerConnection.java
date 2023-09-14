@@ -51,7 +51,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         this.position = position;
     }
 
-    private final int renderDistance = 10; // TODO
+    private final int renderDistance = 2; // TODO
     private final List<Chunk> viewingChunks = new ArrayList<>();
 
     public void loadTerrain() {
@@ -72,6 +72,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
                     sendPacket(new ServerPlayUnloadChunkPacket(lx, lz));
                     viewingChunks.remove(loaded);
                     loaded.removeViewer(this);
+                    getWorld().reviewChunk(new Location(lx, 0, lz));
                 }
             }
 
@@ -99,6 +100,10 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
             e.printStackTrace();
             disconnect(ChatComponent.fromString(e.toString()));
         }
+    }
+
+    public List<Chunk> getViewingChunks() {
+        return new ArrayList<>(viewingChunks);
     }
 
     public Collection<PacketHandler> getAllPacketHandlers() {

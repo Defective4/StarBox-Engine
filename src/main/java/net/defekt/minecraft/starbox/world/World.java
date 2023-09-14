@@ -1,5 +1,6 @@
 package net.defekt.minecraft.starbox.world;
 
+import net.defekt.minecraft.starbox.network.PlayerConnection;
 import net.defekt.minecraft.starbox.world.generator.ChunkGenerator;
 import net.defekt.minecraft.starbox.world.generator.FlatGenerator;
 
@@ -52,5 +53,23 @@ public class World {
     @Override
     public String toString() {
         return "World{" + "seed=" + seed + ", chunks=" + chunks + ", generator=" + generator + '}';
+    }
+
+    public void dropViewer(PlayerConnection player) {
+        for (Chunk chk : player.getViewingChunks()) {
+            chk.removeViewer(player);
+            reviewChunk(new Location(chk.getX(), 0, chk.getZ()));
+        }
+        for (Chunk chk : chunks.values())
+            chk.removeViewer(player);
+    }
+
+    public void reviewChunk(Location loc) {
+        Chunk chk = getChunkAt(loc.getBlockX(), loc.getBlockZ());
+        if (!chk.hasViewers()) dropChunk(loc);
+    }
+
+    public void dropChunk(Location loc) {
+        chunks.remove(loc);
     }
 }
