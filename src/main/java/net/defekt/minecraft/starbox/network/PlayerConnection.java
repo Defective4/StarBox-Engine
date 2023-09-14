@@ -7,7 +7,6 @@ import net.defekt.minecraft.starbox.data.DataTypes;
 import net.defekt.minecraft.starbox.inventory.PlayerInventory;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayUpdateLightPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayMultiBlockChangePacket.BlockChangeEntry;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
@@ -72,6 +71,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
                 if (lx < sourceX || lx > targetX || lz < sourceZ || lz > targetZ) {
                     sendPacket(new ServerPlayUnloadChunkPacket(lx, lz));
                     viewingChunks.remove(loaded);
+                    loaded.removeViewer(this);
                 }
             }
 
@@ -83,6 +83,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
                     sendPacket(new ServerPlayUpdateLightPacket(x, z));
                     sendPacket(new ServerPlayEmptyChunkPacket(x, z));
                     viewingChunks.add(chk);
+                    chk.addViewer(this);
 
                     for (Map.Entry<Integer, List<BlockChangeEntry>> entry : Chunk.convertToProtocol(chk.getBlocks())
                                                                                  .entrySet()) {
@@ -110,6 +111,16 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
 
     public World getWorld() {
         return getServer().getWorld();
+    }
+
+    public void teleport(Location target) {
+        try {
+            sendPacket(new ServerPlayPlayerPositionAndLookPacket(target));
+        } catch (IOException e) {
+            e.printStackTrace();
+            disconnect(ChatComponent.fromString(e.toString()));
+        }
+        setPosition(target);
     }
 
     public void disconnect(ChatComponent reason) {

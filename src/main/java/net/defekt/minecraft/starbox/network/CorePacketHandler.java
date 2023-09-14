@@ -9,8 +9,8 @@ import net.defekt.minecraft.starbox.inventory.ItemStack;
 import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayDeclareCommandsPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerPositionAndLookPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
@@ -78,7 +78,11 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            true,
                                                            false,
                                                            true));
-        connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 16, 8.5, 0f, 0f));
+        connection.teleport(new Location(8.5, 16, 8.5));
+        connection.sendPacket(new ServerPlayDeclareCommandsPacket(connection.getServer()
+                                                                            .getCommandRegistry()
+                                                                            .getRegisteredCommands()
+                                                                            .toArray(new Command[0])));
         connection.loadTerrain();
     }
 

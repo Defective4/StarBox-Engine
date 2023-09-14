@@ -2,18 +2,37 @@ package net.defekt.minecraft.starbox.world;
 
 import net.defekt.minecraft.starbox.world.generator.ChunkGenerator;
 import net.defekt.minecraft.starbox.world.generator.FlatGenerator;
-import net.defekt.minecraft.starbox.world.generator.NoiseGenerator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class World {
     private final long seed = System.currentTimeMillis();
     private final Map<Location, Chunk> chunks = new ConcurrentHashMap<>();
-    private final ChunkGenerator generator = new NoiseGenerator(this);
+    private final ChunkGenerator generator = new FlatGenerator(this);
 
-    private World() {
+    private World() {}
 
+    public void batchFillBlocks(Map<Location, BlockState> blocks) {
+        Map<Chunk, List<Block>> chunked = new HashMap<>();
+        for (Map.Entry<Location, BlockState> entry : blocks.entrySet()) {
+            Location abs = entry.getKey();
+            Location loc = abs.toChunkLocation();
+            Chunk chk = getChunkAt(loc.getBlockX(), loc.getBlockZ());
+            if (!chunked.containsKey(chk)) chunked.put(chk, new ArrayList<>());
+            BlockState state = entry.getValue();
+            chunked.get(chk)
+                   .add(new Block(new Location(abs.getBlockX() % 16, abs.getBlockY(), abs.getBlockZ() % 16),
+                                  state.getType(),
+                                  state.getOffset()));
+        }
+
+        for (Map.Entry<Chunk, List<Block>> entry : chunked.entrySet()) {
+            entry.getKey().batchSetBlocks(entry.getValue());
+        }
     }
 
     public Chunk getChunkAt(int x, int z) {
