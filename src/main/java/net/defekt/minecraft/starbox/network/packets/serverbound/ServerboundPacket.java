@@ -3,8 +3,7 @@ package net.defekt.minecraft.starbox.network.packets.serverbound;
 import net.defekt.minecraft.starbox.Cancellable;
 import net.defekt.minecraft.starbox.network.GameState;
 import net.defekt.minecraft.starbox.network.packets.serverbound.login.ClientLoginStartPacket;
-import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayChatMessagePacket;
-import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayCreativeInventoryActionPacket;
+import net.defekt.minecraft.starbox.network.packets.serverbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
 
@@ -63,6 +62,10 @@ public class ServerboundPacket implements Cancellable {
                 {
                     put(0x28, ClientPlayCreativeInventoryActionPacket.class);
                     put(0x03, ClientPlayChatMessagePacket.class);
+
+                    put(0x12, ClientPlayPositionPacket.class);
+                    put(0x13, ClientPlayPositionAndRotationPacket.class);
+                    put(0x14, ClientPlayRotationPacket.class);
                 }
             });
         }

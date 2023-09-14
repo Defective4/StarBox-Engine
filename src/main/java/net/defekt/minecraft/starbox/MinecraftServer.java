@@ -15,6 +15,7 @@ import net.defekt.minecraft.starbox.network.PlayerConnection;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayKeepAlivePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
+import net.defekt.minecraft.starbox.world.World;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -38,6 +39,12 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     private final Map<UUID, Connection> onlineConnections = new ConcurrentHashMap<>();
     private final Timer timer = new Timer(true);
     private final CommandRegistry commandRegistry = new CommandRegistry(this);
+
+    private final World world = World.createWorld();
+
+    public World getWorld() {
+        return world;
+    }
 
     public MinecraftServer(String host, int port) throws IOException {
         server = this;

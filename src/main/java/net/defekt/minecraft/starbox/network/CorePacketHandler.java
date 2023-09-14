@@ -15,10 +15,10 @@ import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerSta
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.login.ClientLoginStartPacket;
-import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayChatMessagePacket;
-import net.defekt.minecraft.starbox.network.packets.serverbound.play.ClientPlayCreativeInventoryActionPacket;
+import net.defekt.minecraft.starbox.network.packets.serverbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
+import net.defekt.minecraft.starbox.world.Location;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +29,87 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
     private final PlayerConnection connection;
 
     public CorePacketHandler(PlayerConnection connection) {this.connection = connection;}
+
+    @PacketHandlerMethod
+    public void onLoginStart(ClientLoginStartPacket packet) throws Exception {
+        int proto = connection.getProtocol();
+        if (proto != MinecraftServer.PROTOCOL) {
+            connection.disconnect(new ChatComponent.Builder().setTranslate("multiplayer.disconnect.outdated_" + (proto < MinecraftServer.PROTOCOL ?
+                    "client" :
+                    "server")).addWith(new ChatComponent.Builder().setText("1.16.5").build()).build());
+            return;
+        }
+
+        String name = packet.getName();
+        int len = name.length();
+        if (len < 3 || len > 16) {
+            connection.disconnect(ChatComponent.fromString("Your username must be between 3 and 16 characters long!"));
+            return;
+        }
+
+        for (char c : name.toCharArray()) {
+            if (!Character.isLetterOrDigit(c)) {
+                connection.disconnect(ChatComponent.fromString("Detected invalid characters in your username!"));
+                return;
+            }
+        }
+
+        if (connection.getServer().getConnection(name) != null) {
+            connection.disconnect(ChatComponent.fromString("Someone with this name is already playing!"));
+            return;
+        }
+
+        UUID uid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        PlayerProfile profile = new PlayerProfile(name, uid, GameMode.CREATIVE, null);
+        connection.setProfile(profile);
+
+
+        connection.sendPacket(new ServerLoginSuccessPacket(uid, name));
+        connection.setGameState(GameState.PLAY);
+        connection.getServer().insertConnection(connection);
+        connection.sendPacket(new ServerPlayJoinGamePacket(1,
+                                                           false,
+                                                           profile.getGameMode(),
+                                                           GameMode.NONE,
+                                                           "minecraft:overworld",
+                                                           connection.getServer().getDimensionCodec(),
+                                                           10,
+                                                           false,
+                                                           true,
+                                                           false,
+                                                           true));
+        connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 16, 8.5, 0f, 0f));
+        connection.loadTerrain();
+    }
+
+    private void onMovement(Location to) {
+        Location from = connection.getPosition();
+        connection.setPosition(to);
+
+        int cx = Math.floorDiv(to.getBlockX(), 16);
+        int cz = Math.floorDiv(to.getBlockZ(), 16);
+
+        if (cx != Math.floorDiv(from.getBlockX(), 16) || cz != Math.floorDiv(from.getBlockZ(), 16)) {
+            connection.loadTerrain();
+        }
+    }
+
+    @PacketHandlerMethod
+    public void onMovement(ClientPlayPositionAndRotationPacket e) {
+        onMovement(e.getLocation());
+    }
+
+    @PacketHandlerMethod
+    public void onMovement(ClientPlayRotationPacket e) {
+        Location cur = connection.getPosition();
+        onMovement(new Location(cur.getX(), cur.getY(), cur.getZ(), e.getYaw(), e.getPitch()));
+    }
+
+    @PacketHandlerMethod
+    public void onMovement(ClientPlayPositionPacket e) {
+        Location cur = connection.getPosition();
+        onMovement(new Location(e.getX(), e.getY(), e.getZ(), cur.getYaw(), cur.getPitch()));
+    }
 
     @PacketHandlerMethod
     public void onMessageReceive(ClientPlayChatMessagePacket packet) {
@@ -97,57 +178,6 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
         short slot = packet.getSlot();
         ItemStack item = packet.getItem();
         connection.getInventory().setItem(slot, item);
-    }
-
-    @PacketHandlerMethod
-    public void onLoginStart(ClientLoginStartPacket packet) throws Exception {
-        int proto = connection.getProtocol();
-        if (proto != MinecraftServer.PROTOCOL) {
-            connection.disconnect(new ChatComponent.Builder().setTranslate("multiplayer.disconnect.outdated_" + (proto < MinecraftServer.PROTOCOL ?
-                    "client" :
-                    "server")).addWith(new ChatComponent.Builder().setText("1.16.5").build()).build());
-            return;
-        }
-
-        String name = packet.getName();
-        int len = name.length();
-        if (len < 3 || len > 16) {
-            connection.disconnect(ChatComponent.fromString("Your username must be between 3 and 16 characters long!"));
-            return;
-        }
-
-        for (char c : name.toCharArray()) {
-            if (!Character.isLetterOrDigit(c)) {
-                connection.disconnect(ChatComponent.fromString("Detected invalid characters in your username!"));
-                return;
-            }
-        }
-
-        if (connection.getServer().getConnection(name) != null) {
-            connection.disconnect(ChatComponent.fromString("Someone with this name is already playing!"));
-            return;
-        }
-
-        UUID uid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
-        PlayerProfile profile = new PlayerProfile(name, uid, GameMode.CREATIVE, null);
-        connection.setProfile(profile);
-
-
-        connection.sendPacket(new ServerLoginSuccessPacket(uid, name));
-        connection.setGameState(GameState.PLAY);
-        connection.getServer().insertConnection(connection);
-        connection.sendPacket(new ServerPlayJoinGamePacket(1,
-                                                           false,
-                                                           profile.getGameMode(),
-                                                           GameMode.NONE,
-                                                           "minecraft:overworld",
-                                                           connection.getServer().getDimensionCodec(),
-                                                           4,
-                                                           false,
-                                                           true,
-                                                           false,
-                                                           true));
-        connection.sendPacket(new ServerPlayPlayerPositionAndLookPacket(8.5, 16, 8.5, 0f, 0f));
     }
 
     @PacketHandlerMethod

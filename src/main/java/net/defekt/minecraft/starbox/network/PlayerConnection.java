@@ -7,16 +7,19 @@ import net.defekt.minecraft.starbox.data.DataTypes;
 import net.defekt.minecraft.starbox.inventory.PlayerInventory;
 import net.defekt.minecraft.starbox.network.packets.PacketHandler;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayDisconnectPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayMultiBlockChangePacket.BlockChangeEntry;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.ServerboundPacket;
+import net.defekt.minecraft.starbox.world.Chunk;
+import net.defekt.minecraft.starbox.world.Location;
+import net.defekt.minecraft.starbox.world.World;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public class PlayerConnection extends Connection implements AutoCloseable, OpenState {
 
@@ -38,12 +41,73 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         coreHandler = new CorePacketHandler(this);
     }
 
+    private Location position = new Location(0, 0, 0);
+
+    public Location getPosition() {
+        return position;
+    }
+
+    protected void setPosition(Location position) {
+        this.position = position;
+    }
+
+    private final int renderDistance = 10; // TODO
+    private final List<Chunk> viewingChunks = new ArrayList<>();
+
+    public void loadTerrain() {
+        int cx = Math.floorDiv(position.getBlockX(), 16);
+        int cz = Math.floorDiv(position.getBlockZ(), 16);
+
+        int sourceX = cx - renderDistance;
+        int sourceZ = cz - renderDistance;
+        int targetX = cx + renderDistance;
+        int targetZ = cz + renderDistance;
+
+        try {
+
+            for (Chunk loaded : viewingChunks.toArray(new Chunk[0])) {
+                int lx = loaded.getX();
+                int lz = loaded.getZ();
+                if (lx < sourceX || lx > targetX || lz < sourceZ || lz > targetZ) {
+                    sendPacket(new ServerPlayUnloadChunkPacket(lx, lz));
+                    viewingChunks.remove(loaded);
+                }
+            }
+
+            sendPacket(new ServerPlayUpdateViewPositionPacket(cx, cz));
+            for (int x = sourceX; x <= targetX; x++)
+                for (int z = sourceZ; z <= targetZ; z++) {
+                    Chunk chk = getWorld().getChunkAt(x, z);
+                    if (viewingChunks.contains(chk)) continue;
+                    sendPacket(new ServerPlayEmptyChunkPacket(x, z));
+                    viewingChunks.add(chk);
+
+                    for (Map.Entry<Integer, List<BlockChangeEntry>> entry : Chunk.convertToProtocol(chk.getBlocks())
+                                                                                 .entrySet()) {
+                        sendPacket(new ServerPlayMultiBlockChangePacket(x,
+                                                                        entry.getKey(),
+                                                                        z,
+                                                                        entry.getValue()
+                                                                             .toArray(new BlockChangeEntry[0])));
+                    }
+
+                }
+        } catch (Exception e) {
+            e.printStackTrace();
+            disconnect(ChatComponent.fromString(e.toString()));
+        }
+    }
+
     public Collection<PacketHandler> getAllPacketHandlers() {
         return Collections.singleton(coreHandler);
     }
 
     public PlayerInventory getInventory() {
         return inventory;
+    }
+
+    public World getWorld() {
+        return getServer().getWorld();
     }
 
     public void disconnect(ChatComponent reason) {
