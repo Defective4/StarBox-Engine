@@ -18,9 +18,7 @@ import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayP
 import net.defekt.minecraft.starbox.world.World;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
@@ -130,6 +128,34 @@ public class MinecraftServer implements AutoCloseable, OpenState {
         }
     }
 
+    private boolean publishedToLAN = false;
+
+    public int getPort() {
+        return srv.getLocalPort();
+    }
+
+    public boolean publishToLAN() {
+        if (publishedToLAN) return false;
+        pool.submit(() -> {
+            try (DatagramSocket socket = new DatagramSocket()) {
+                while (isOpen()) {
+                    byte[] data = ("[MOTD]A StarBox Server[/MOTD][AD]" + getPort() + "[/AD]").getBytes();
+                    socket.send(new DatagramPacket(
+                            data,
+                            data.length,
+                            Inet4Address.getByName("224.0.2.60"),
+                            4445
+                    ));
+                    Thread.sleep(1500);
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        publishedToLAN = true;
+        return true;
+    }
+
     public PlayerConnection getPlayer(String name) {
         for (Connection con : getOnlineConnections())
             if (con instanceof PlayerConnection && con.getProfile().getName().equalsIgnoreCase(name))
@@ -147,6 +173,7 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     public Connection getConnection(String name) {
         for (Connection con : getOnlineConnections())
             if (con.getProfile().getName().equalsIgnoreCase(name)) return con;
+
         return null;
     }
 
