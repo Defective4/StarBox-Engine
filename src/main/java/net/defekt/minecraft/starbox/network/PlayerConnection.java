@@ -51,7 +51,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         this.position = position;
     }
 
-    private final int renderDistance = 2; // TODO
+    private final int renderDistance = 10; // TODO
     private final List<Chunk> viewingChunks = new ArrayList<>();
 
     public void loadTerrain() {
