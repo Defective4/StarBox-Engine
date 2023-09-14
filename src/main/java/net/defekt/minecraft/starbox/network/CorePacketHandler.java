@@ -11,6 +11,7 @@ import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayDeclareCommandsPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayTimePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
@@ -79,6 +80,8 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            false,
                                                            true));
         connection.teleport(new Location(8.5, 16, 8.5));
+        connection.sendPacket(new ServerPlayTimePacket(connection.getWorld().getAgeTicks(),
+                                                       -connection.getWorld().getTime()));
         connection.sendPacket(new ServerPlayDeclareCommandsPacket(connection.getServer()
                                                                             .getCommandRegistry()
                                                                             .getRegisteredCommands()

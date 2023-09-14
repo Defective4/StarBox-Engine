@@ -32,6 +32,7 @@ public class CommandRegistry {
         registerCommand(new TellrawCommand());
         registerCommand(new PlaysoundCommand());
         registerCommand(new FillCommand());
+        registerCommand(new TimeCommand());
     }
 
     public void unregisterCommand(Command cmd) {
