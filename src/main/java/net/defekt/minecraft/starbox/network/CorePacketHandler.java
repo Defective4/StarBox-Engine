@@ -10,6 +10,7 @@ import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayDeclareCommandsPacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayGameStatePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayTimePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
@@ -20,6 +21,7 @@ import net.defekt.minecraft.starbox.network.packets.serverbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
 import net.defekt.minecraft.starbox.world.Location;
+import net.defekt.minecraft.starbox.world.World;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -87,6 +89,12 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                                             .getRegisteredCommands()
                                                                             .toArray(new Command[0])));
         connection.loadTerrain();
+        World.Weather weather = connection.getWorld().getWeather();
+        connection.sendPacket(new ServerPlayGameStatePacket(ServerPlayGameStatePacket.Reason.RAIN_LEVEL_CHANGE,
+                                                            weather != World.Weather.CLEAR ? 1 : 0));
+        connection.sendPacket(new ServerPlayGameStatePacket(ServerPlayGameStatePacket.Reason.THUNDER_LEVEL_CHANGE,
+                                                            weather == World.Weather.THUNDER ? 1 : 0));
+
     }
 
     @PacketHandlerMethod

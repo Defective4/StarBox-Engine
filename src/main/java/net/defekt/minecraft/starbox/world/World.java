@@ -2,6 +2,7 @@ package net.defekt.minecraft.starbox.world;
 
 import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.network.PlayerConnection;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayGameStatePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayTimePacket;
 import net.defekt.minecraft.starbox.world.generator.ChunkGenerator;
 import net.defekt.minecraft.starbox.world.generator.FlatGenerator;
@@ -14,7 +15,14 @@ import java.util.concurrent.TimeUnit;
 
 public class World {
 
+    public enum Weather {
+        CLEAR,
+        RAIN,
+        THUNDER
+    }
+
     private int time = 6000;
+    private Weather weather = Weather.CLEAR;
     private final long created = System.currentTimeMillis();
 
     private final long seed = System.currentTimeMillis();
@@ -27,6 +35,23 @@ public class World {
 
     public int getTime() {
         return time % 24000;
+    }
+
+    public Weather getWeather() {
+        return weather;
+    }
+
+    public void setWeather(Weather weather) {
+        this.weather = weather;
+        MinecraftServer server = MinecraftServer.getServer();
+        try {
+            server.broadcastPacket(new ServerPlayGameStatePacket(ServerPlayGameStatePacket.Reason.RAIN_LEVEL_CHANGE,
+                                                                 weather != Weather.CLEAR ? 1 : 0));
+            server.broadcastPacket(new ServerPlayGameStatePacket(ServerPlayGameStatePacket.Reason.THUNDER_LEVEL_CHANGE,
+                                                                 weather == Weather.THUNDER ? 1 : 0));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getParsedTime() {
