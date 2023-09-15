@@ -20,6 +20,7 @@ import net.defekt.minecraft.starbox.network.packets.serverbound.login.ClientLogi
 import net.defekt.minecraft.starbox.network.packets.serverbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusPingPacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.status.ClientStatusRequestPacket;
+import net.defekt.minecraft.starbox.storage.Whitelist;
 import net.defekt.minecraft.starbox.world.Location;
 import net.defekt.minecraft.starbox.world.World;
 
@@ -55,6 +56,13 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                 connection.disconnect(ChatComponent.fromString("Detected invalid characters in your username!"));
                 return;
             }
+        }
+
+        Whitelist whitelist = connection.getServer().getWhitelist();
+        if (whitelist.isEnabled() && !whitelist.isWhitelisted(name)) {
+            connection.disconnect(new ChatComponent.Builder().setTranslate("multiplayer.disconnect.not_whitelisted")
+                                                             .build());
+            return;
         }
 
         if (connection.getServer().getConnection(name) != null) {

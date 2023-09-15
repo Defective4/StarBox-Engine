@@ -15,6 +15,7 @@ import net.defekt.minecraft.starbox.network.PlayerConnection;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayKeepAlivePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
+import net.defekt.minecraft.starbox.storage.Whitelist;
 import net.defekt.minecraft.starbox.world.World;
 
 import java.io.*;
@@ -40,6 +41,12 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     private final CommandRegistry commandRegistry = new CommandRegistry(this);
 
     private final World world = World.createWorld();
+
+    private final Whitelist whitelist = new Whitelist();
+
+    public Whitelist getWhitelist() {
+        return whitelist;
+    }
 
     public MinecraftServer(String host, int port) throws IOException {
         server = this;
@@ -200,10 +207,12 @@ public class MinecraftServer implements AutoCloseable, OpenState {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (isOpen()) {
                 for (PlayerConnection con : getPlayers()) {
-                    con.disconnect(ChatComponent.fromString("The server is stopping"));
+                    con.disconnect(new ChatComponent.Builder().setTranslate("multiplayer.disconnect.server_shutdown")
+                                                              .build());
                 }
             }
-        })); while (isOpen()) {
+        }));
+        while (isOpen()) {
             try {
                 Socket client = srv.accept();
                 pool.submit(() -> {
