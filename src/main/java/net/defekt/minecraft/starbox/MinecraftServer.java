@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class MinecraftServer implements AutoCloseable, OpenState {
 
@@ -102,6 +103,13 @@ public class MinecraftServer implements AutoCloseable, OpenState {
             } catch (Exception ignored) {}
     }
 
+    public Collection<PlayerConnection> getPlayers() {
+        return new ArrayList<>(onlineConnections.values()).stream()
+                                                          .filter(con -> con instanceof PlayerConnection)
+                                                          .map(con -> (PlayerConnection) con)
+                                                          .collect(Collectors.toList());
+    }
+
     public Collection<Connection> getOnlineConnections() {
         return new ArrayList<>(onlineConnections.values());
     }
@@ -140,12 +148,7 @@ public class MinecraftServer implements AutoCloseable, OpenState {
             try (DatagramSocket socket = new DatagramSocket()) {
                 while (isOpen()) {
                     byte[] data = ("[MOTD]A StarBox Server[/MOTD][AD]" + getPort() + "[/AD]").getBytes();
-                    socket.send(new DatagramPacket(
-                            data,
-                            data.length,
-                            Inet4Address.getByName("224.0.2.60"),
-                            4445
-                    ));
+                    socket.send(new DatagramPacket(data, data.length, Inet4Address.getByName("224.0.2.60"), 4445));
                     Thread.sleep(1500);
                 }
             } catch (IOException | InterruptedException e) {
@@ -194,7 +197,13 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     }
 
     public void start() {
-        while (isOpen()) {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (isOpen()) {
+                for (PlayerConnection con : getPlayers()) {
+                    con.disconnect(ChatComponent.fromString("The server is stopping"));
+                }
+            }
+        })); while (isOpen()) {
             try {
                 Socket client = srv.accept();
                 pool.submit(() -> {

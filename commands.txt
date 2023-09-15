@@ -1,65 +1,73 @@
-[23:05:34] [Render thread/INFO]: [CHAT] /advancement (grant|revoke)
-[23:05:34] [Render thread/INFO]: [CHAT] /attribute <target> <attribute> (base|get|modifier)
-[23:05:34] [Render thread/INFO]: [CHAT] /bossbar (add|get|list|remove|set)
-[23:05:34] [Render thread/INFO]: [CHAT] /clear [<targets>]
-[23:05:34] [Render thread/INFO]: [CHAT] /clone <begin> <end> <destination> [filtered|masked|replace]
-[23:05:34] [Render thread/INFO]: [CHAT] /data (get|merge|modify|remove)
-[23:05:34] [Render thread/INFO]: [CHAT] /datapack (disable|enable|list)
-[23:05:34] [Render thread/INFO]: [CHAT] /debug (report|start|stop)
-[23:05:34] [Render thread/INFO]: [CHAT] /defaultgamemode (adventure|creative|spectator|survival)
-[23:05:34] [Render thread/INFO]: [CHAT] /difficulty [easy|hard|normal|peaceful]
-[23:05:34] [Render thread/INFO]: [CHAT] /effect (clear|give)
-[23:05:34] [Render thread/INFO]: [CHAT] /enchant <targets> <enchantment> [<level>]
-[23:05:34] [Render thread/INFO]: [CHAT] /execute (align|anchored|as|at|facing|if|in|positioned|rotated|run|store|unless)
-[23:05:34] [Render thread/INFO]: [CHAT] /experience (add|query|set)
-[23:05:34] [Render thread/INFO]: [CHAT] /fill <from> <to> <block> [destroy|hollow|keep|outline|replace]
-[23:05:34] [Render thread/INFO]: [CHAT] /forceload (add|query|remove)
-[23:05:34] [Render thread/INFO]: [CHAT] /function <name>
-[23:05:34] [Render thread/INFO]: [CHAT] /gamemode (adventure|creative|spectator|survival)
-[23:05:34] [Render thread/INFO]: [CHAT] /gamerule (announceAdvancements|commandBlockOutput|disableElytraMovementCheck|disableRaids|doDaylightCycle|doEntityDrops|doFireTick|doImmediateRespawn|doInsomnia|doLimitedCrafting|doMobLoot|doMobSpawning|doPatrolSpawning|doTileDrops|doTraderSpawning|doWeatherCycle|drowningDamage|fallDamage|fireDamage|forgiveDeadPlayers|keepInventory|logAdminCommands|maxCommandChainLength|maxEntityCramming|mobGriefing|naturalRegeneration|randomTickSpeed|reducedDebugInfo|sendCommandFeedback|showDeathMessages|spawnRadius|spectatorsGenerateChunks|universalAnger)
-[23:05:34] [Render thread/INFO]: [CHAT] /give <targets> <item> [<count>]
-[23:05:34] [Render thread/INFO]: [CHAT] /help [<command>]
-[23:05:34] [Render thread/INFO]: [CHAT] /ibe [block|entity|item|nbt|self|snbt]
-[23:05:34] [Render thread/INFO]: [CHAT] /kick <targets> [<reason>]
-[23:05:34] [Render thread/INFO]: [CHAT] /kill [<targets>]
-[23:05:34] [Render thread/INFO]: [CHAT] /list [uuids]
-[23:05:34] [Render thread/INFO]: [CHAT] /locate (bastion_remnant|buried_treasure|desert_pyramid|endcity|fortress|igloo|jungle_pyramid|mansion|mineshaft|monument|nether_fossil|ocean_ruin|pillager_outpost|ruined_portal|shipwreck|stronghold|swamp_hut|village)
-[23:05:34] [Render thread/INFO]: [CHAT] /locatebiome <biome>
-[23:05:34] [Render thread/INFO]: [CHAT] /loot (give|insert|replace|spawn)
-[23:05:34] [Render thread/INFO]: [CHAT] /me <action>
-[23:05:34] [Render thread/INFO]: [CHAT] /msg <targets> <message>
-[23:05:34] [Render thread/INFO]: [CHAT] /particle <name> [<pos>]
-[23:05:34] [Render thread/INFO]: [CHAT] /playsound <sound> (ambient|block|hostile|master|music|neutral|player|record|voice|weather)
-[23:05:34] [Render thread/INFO]: [CHAT] /publish [<port>]
-[23:05:34] [Render thread/INFO]: [CHAT] /recipe (give|take)
-[23:05:34] [Render thread/INFO]: [CHAT] /reload
-[23:05:34] [Render thread/INFO]: [CHAT] /replaceitem (block|entity)
-[23:05:34] [Render thread/INFO]: [CHAT] /say <message>
-[23:05:34] [Render thread/INFO]: [CHAT] /schedule (clear|function)
-[23:05:34] [Render thread/INFO]: [CHAT] /scoreboard (objectives|players)
-[23:05:34] [Render thread/INFO]: [CHAT] /seed
-[23:05:34] [Render thread/INFO]: [CHAT] /setblock <pos> <block> [destroy|keep|replace]
-[23:05:34] [Render thread/INFO]: [CHAT] /setworldspawn [<pos>]
-[23:05:34] [Render thread/INFO]: [CHAT] /spawnpoint [<targets>]
-[23:05:34] [Render thread/INFO]: [CHAT] /spectate [<target>]
-[23:05:34] [Render thread/INFO]: [CHAT] /spreadplayers <center> <spreadDistance> <maxRange> (under|<respectTeams>)
-[23:05:34] [Render thread/INFO]: [CHAT] /stopsound <targets> [*|ambient|block|hostile|master|music|neutral|player|record|voice|weather]
-[23:05:34] [Render thread/INFO]: [CHAT] /summon <entity> [<pos>]
-[23:05:34] [Render thread/INFO]: [CHAT] /tag <targets> (add|list|remove)
-[23:05:34] [Render thread/INFO]: [CHAT] /team (add|empty|join|leave|list|modify|remove)
-[23:05:34] [Render thread/INFO]: [CHAT] /teammsg <message>
-[23:05:34] [Render thread/INFO]: [CHAT] /teleport (<destination>|<location>|<targets>)
-[23:05:34] [Render thread/INFO]: [CHAT] /tell -> msg
-[23:05:34] [Render thread/INFO]: [CHAT] /tellraw <targets> <message>
-[23:05:34] [Render thread/INFO]: [CHAT] /time (add|query|set)
-[23:05:34] [Render thread/INFO]: [CHAT] /title <targets> (actionbar|clear|reset|subtitle|times|title)
-[23:05:34] [Render thread/INFO]: [CHAT] /tm -> teammsg
-[23:05:34] [Render thread/INFO]: [CHAT] /tp -> teleport
-[23:05:34] [Render thread/INFO]: [CHAT] /trigger <objective> [add|set]
-[23:05:34] [Render thread/INFO]: [CHAT] /viaver [<args>]
-[23:05:34] [Render thread/INFO]: [CHAT] /viaversion [<args>]
-[23:05:34] [Render thread/INFO]: [CHAT] /vvfabric [<args>]
-[23:05:34] [Render thread/INFO]: [CHAT] /w -> msg
-[23:05:34] [Render thread/INFO]: [CHAT] /weather (clear|rain|thunder)
-[23:05:34] [Render thread/INFO]: [CHAT] /worldborder (add|center|damage|get|set|warning)
-[23:05:34] [Render thread/INFO]: [CHAT] /xp -> experience
+/advancement (grant|revoke)
+/attribute <target> <attribute> (base|get|modifier)
+/ban <targets> [<reason>]
+/ban-ip <target> [<reason>]
+/banlist [ips|players]
+/bossbar (add|get|list|remove|set)
+/clear [<targets>]
+/clone <begin> <end> <destination> [filtered|masked|replace]
+/data (get|merge|modify|remove)
+/datapack (disable|enable|list)
+/debug (report|start|stop)
+/defaultgamemode (adventure|creative|spectator|survival)
+/deop <targets>
+/difficulty [easy|hard|normal|peaceful]
+/effect (clear|give)
+/enchant <targets> <enchantment> [<level>]
+/execute (align|anchored|as|at|facing|if|in|positioned|rotated|run|store|unless)
+/experience (add|query|set)
+/fill <from> <to> <block> [destroy|hollow|keep|outline|replace]
+/forceload (add|query|remove)
+/function <name>
+/gamemode (adventure|creative|spectator|survival)
+/gamerule (announceAdvancements|commandBlockOutput|disableElytraMovementCheck|disableRaids|doDaylightCycle|doEntityDrops|doFireTick|doImmediateRespawn|doInsomnia|doLimitedCrafting|doMobLoot|doMobSpawning|doPatrolSpawning|doTileDrops|doTraderSpawning|doWeatherCycle|drowningDamage|fallDamage|fireDamage|forgiveDeadPlayers|keepInventory|logAdminCommands|maxCommandChainLength|maxEntityCramming|mobGriefing|naturalRegeneration|randomTickSpeed|reducedDebugInfo|sendCommandFeedback|showDeathMessages|spawnRadius|spectatorsGenerateChunks|universalAnger)
+/give <targets> <item> [<count>]
+/help [<command>]
+/kick <targets> [<reason>]
+/kill [<targets>]
+/list [uuids]
+/locate (bastion_remnant|buried_treasure|desert_pyramid|endcity|fortress|igloo|jungle_pyramid|mansion|mineshaft|monument|nether_fossil|ocean_ruin|pillager_outpost|ruined_portal|shipwreck|stronghold|swamp_hut|village)
+/locatebiome <biome>
+/loot (give|insert|replace|spawn)
+/me <action>
+/msg <targets> <message>
+/op <targets>
+/pardon <targets>
+/pardon-ip <target>
+/particle <name> [<pos>]
+/playsound <sound> (ambient|block|hostile|master|music|neutral|player|record|voice|weather)
+/recipe (give|take)
+/reload
+/replaceitem (block|entity)
+/save-all [flush]
+/save-off
+/save-on
+/say <message>
+/schedule (clear|function)
+/scoreboard (objectives|players)
+/seed
+/setblock <pos> <block> [destroy|keep|replace]
+/setidletimeout <minutes>
+/setworldspawn [<pos>]
+/spawnpoint [<targets>]
+/spectate [<target>]
+/spreadplayers <center> <spreadDistance> <maxRange> (under|<respectTeams>)
+/stop
+/stopsound <targets> [*|ambient|block|hostile|master|music|neutral|player|record|voice|weather]
+/summon <entity> [<pos>]
+/tag <targets> (add|list|remove)
+/team (add|empty|join|leave|list|modify|remove)
+/teammsg <message>
+/teleport (<destination>|<location>|<targets>)
+/tell -> msg
+/tellraw <targets> <message>
+/time (add|query|set)
+/title <targets> (actionbar|clear|reset|subtitle|times|title)
+/tm -> teammsg
+/tp -> teleport
+/trigger <objective> [add|set]
+/w -> msg
+/weather (clear|rain|thunder)
+/whitelist (add|list|off|on|reload|remove)
+/worldborder (add|center|damage|get|set|warning)
+/xp -> experience

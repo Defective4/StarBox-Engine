@@ -35,6 +35,7 @@ public class CommandRegistry {
         registerCommand(new TimeCommand());
         registerCommand(new TeleportCommand());
         registerCommand(new WeatherCommand());
+        registerCommand(new StopCommand());
     }
 
     public void unregisterCommand(Command cmd) {
