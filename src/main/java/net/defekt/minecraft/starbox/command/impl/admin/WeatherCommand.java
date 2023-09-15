@@ -17,23 +17,18 @@ public class WeatherCommand extends Command {
             switch (args[0].toLowerCase()) {
                 case "thunder": {
                     player.getWorld().setWeather(World.Weather.THUNDER);
-                    player.sendMessage(new ChatComponent.Builder()
-                                               .setTranslate("commands.weather.set.thunder")
-                                               .build());
+                    player.sendMessage(new ChatComponent.Builder().setTranslate("commands.weather.set.thunder")
+                                                                  .build());
                     break;
                 }
                 case "rain": {
                     player.getWorld().setWeather(World.Weather.RAIN);
-                    player.sendMessage(new ChatComponent.Builder()
-                                               .setTranslate("commands.weather.set.rain")
-                                               .build());
+                    player.sendMessage(new ChatComponent.Builder().setTranslate("commands.weather.set.rain").build());
                     break;
                 }
                 case "clear": {
                     player.getWorld().setWeather(World.Weather.CLEAR);
-                    player.sendMessage(new ChatComponent.Builder()
-                                               .setTranslate("commands.weather.set.clear")
-                                               .build());
+                    player.sendMessage(new ChatComponent.Builder().setTranslate("commands.weather.set.clear").build());
                     break;
                 }
                 default: {

@@ -30,11 +30,19 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     private final CorePacketHandler coreHandler;
 
     private final PlayerInventory inventory = new PlayerInventory(this);
-    private int renderDistance = 0;
     private final List<Chunk> viewingChunks = new ArrayList<>();
+    private int renderDistance = 0;
     private GameState gameState = GameState.HANDSHAKING;
     private Location position = new Location(0, 0, 0);
     private String language = "en_US";
+
+    public PlayerConnection(MinecraftServer server, Socket socket) throws IOException {
+        super(server);
+        this.socket = socket;
+        inputStream = new DataInputStream(socket.getInputStream());
+        outputStream = socket.getOutputStream();
+        coreHandler = new CorePacketHandler(this);
+    }
 
     public String getLanguage() {
         return language;
@@ -50,14 +58,6 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
 
     protected void setRenderDistance(int renderDistance) {
         this.renderDistance = renderDistance;
-    }
-
-    public PlayerConnection(MinecraftServer server, Socket socket) throws IOException {
-        super(server);
-        this.socket = socket;
-        inputStream = new DataInputStream(socket.getInputStream());
-        outputStream = socket.getOutputStream();
-        coreHandler = new CorePacketHandler(this);
     }
 
     public Location getPosition() {

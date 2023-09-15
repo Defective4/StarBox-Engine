@@ -7,6 +7,13 @@ import java.io.IOException;
 
 public class ServerPlayGameStatePacket extends ClientboundPacket {
 
+    public ServerPlayGameStatePacket(Reason reason, float value) throws IOException {
+        super(0x1D);
+        DataOutputStream wrapper = getWrapper();
+        wrapper.writeByte(reason.id);
+        wrapper.writeFloat(value);
+    }
+
     public enum Reason {
         NO_RESPAWN_BLOCK(0),
         END_RAIN(1),
@@ -26,12 +33,5 @@ public class ServerPlayGameStatePacket extends ClientboundPacket {
         Reason(int id) {
             this.id = id;
         }
-    }
-
-    public ServerPlayGameStatePacket(Reason reason, float value) throws IOException {
-        super(0x1D);
-        DataOutputStream wrapper = getWrapper();
-        wrapper.writeByte(reason.id);
-        wrapper.writeFloat(value);
     }
 }

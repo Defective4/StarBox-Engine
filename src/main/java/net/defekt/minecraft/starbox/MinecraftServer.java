@@ -43,10 +43,7 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     private final World world = World.createWorld();
 
     private final Whitelist whitelist = new Whitelist();
-
-    public Whitelist getWhitelist() {
-        return whitelist;
-    }
+    private boolean publishedToLAN = false;
 
     public MinecraftServer(String host, int port) throws IOException {
         server = this;
@@ -93,6 +90,10 @@ public class MinecraftServer implements AutoCloseable, OpenState {
 
     public static MinecraftServer getServer() {
         return server;
+    }
+
+    public Whitelist getWhitelist() {
+        return whitelist;
     }
 
     public World getWorld() {
@@ -142,8 +143,6 @@ public class MinecraftServer implements AutoCloseable, OpenState {
             e.printStackTrace();
         }
     }
-
-    private boolean publishedToLAN = false;
 
     public int getPort() {
         return srv.getLocalPort();

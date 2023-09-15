@@ -15,19 +15,17 @@ import java.util.concurrent.TimeUnit;
 
 public class World {
 
-    public enum Weather {
-        CLEAR,
-        RAIN,
-        THUNDER
-    }
-
-    private int time = 6000;
-    private Weather weather = Weather.CLEAR;
     private final long created = System.currentTimeMillis();
-
     private final long seed = System.currentTimeMillis();
     private final Map<Location, Chunk> chunks = new ConcurrentHashMap<>();
     private final ChunkGenerator generator = new FlatGenerator(this);
+    private int time = 6000;
+    private Weather weather = Weather.CLEAR;
+    private World() {}
+
+    public static World createWorld() {
+        return new World();
+    }
 
     public long getAgeTicks() {
         return (System.currentTimeMillis() - created) / 50;
@@ -35,6 +33,13 @@ public class World {
 
     public int getTime() {
         return time % 24000;
+    }
+
+    public void setTime(int time) {
+        this.time = Math.abs(time % 24000);
+        try {
+            MinecraftServer.getServer().broadcastPacket(new ServerPlayTimePacket(getAgeTicks(), -time));
+        } catch (IOException ignored) {}
     }
 
     public Weather getWeather() {
@@ -61,19 +66,6 @@ public class World {
 
         long hourM = TimeUnit.HOURS.toMillis(1);
         return new SimpleDateFormat("HH:ss").format(new Date(hours * hourM + seconds * 1000L - hourM));
-    }
-
-    public void setTime(int time) {
-        this.time = Math.abs(time % 24000);
-        try {
-            MinecraftServer.getServer().broadcastPacket(new ServerPlayTimePacket(getAgeTicks(), -time));
-        } catch (IOException ignored) {}
-    }
-
-    private World() {}
-
-    public static World createWorld() {
-        return new World();
     }
 
     public void batchFillBlocks(Map<Location, BlockState> blocks) {
@@ -126,5 +118,11 @@ public class World {
 
     public void dropChunk(Location loc) {
         chunks.remove(loc);
+    }
+
+    public enum Weather {
+        CLEAR,
+        RAIN,
+        THUNDER
     }
 }

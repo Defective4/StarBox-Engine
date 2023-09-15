@@ -22,7 +22,7 @@ public class WhitelistCommand extends Command {
                     if (args.length > 1) {
                         ChatComponent.Builder bd = new ChatComponent.Builder();
                         if (whitelist.remove(args[1])) bd.setTranslate("commands.whitelist.remove.success")
-                                                      .addWith(ChatComponent.fromString(args[1]));
+                                                         .addWith(ChatComponent.fromString(args[1]));
                         else bd.setTranslate("commands.whitelist.remove.failed").setColor("red");
                         player.sendMessage(bd.build());
                         return true;
@@ -33,9 +33,9 @@ public class WhitelistCommand extends Command {
                 case "on": {
                     boolean on = args[0].equalsIgnoreCase("on");
                     whitelist.setEnabled(on);
-                    player.sendMessage(new ChatComponent.Builder()
-                                               .setTranslate("commands.whitelist."+(on ? "enabled" : "disabled"))
-                                               .build());
+                    player.sendMessage(new ChatComponent.Builder().setTranslate("commands.whitelist." + (on ?
+                            "enabled" :
+                            "disabled")).build());
                     return true;
                 }
                 case "list": {

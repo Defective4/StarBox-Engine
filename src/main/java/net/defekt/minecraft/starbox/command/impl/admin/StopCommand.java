@@ -11,9 +11,7 @@ public class StopCommand extends Command {
 
     @Override
     public boolean execute(PlayerConnection player, String command, String[] args) {
-        player.sendMessage(new ChatComponent.Builder()
-                                   .setTranslate("commands.stop.stopping")
-                                   .build());
+        player.sendMessage(new ChatComponent.Builder().setTranslate("commands.stop.stopping").build());
         System.exit(1);
         return true;
     }
