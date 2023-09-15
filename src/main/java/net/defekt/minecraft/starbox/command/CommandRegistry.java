@@ -33,6 +33,7 @@ public class CommandRegistry {
         registerCommand(new PlaysoundCommand());
         registerCommand(new FillCommand());
         registerCommand(new TimeCommand());
+        registerCommand(new TeleportCommand());
     }
 
     public void unregisterCommand(Command cmd) {
