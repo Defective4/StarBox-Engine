@@ -30,10 +30,27 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     private final CorePacketHandler coreHandler;
 
     private final PlayerInventory inventory = new PlayerInventory(this);
-    private final int renderDistance = 10; // TODO
+    private int renderDistance = 0;
     private final List<Chunk> viewingChunks = new ArrayList<>();
     private GameState gameState = GameState.HANDSHAKING;
     private Location position = new Location(0, 0, 0);
+    private String language = "en_US";
+
+    public String getLanguage() {
+        return language;
+    }
+
+    protected void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public int getRenderDistance() {
+        return renderDistance;
+    }
+
+    protected void setRenderDistance(int renderDistance) {
+        this.renderDistance = renderDistance;
+    }
 
     public PlayerConnection(MinecraftServer server, Socket socket) throws IOException {
         super(server);

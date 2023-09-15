@@ -60,8 +60,9 @@ public class ServerboundPacket implements Cancellable {
             });
             PACKETS.put(GameState.PLAY, new HashMap<Integer, Class<? extends ServerboundPacket>>() {
                 {
-                    put(0x28, ClientPlayCreativeInventoryActionPacket.class);
                     put(0x03, ClientPlayChatMessagePacket.class);
+                    put(0x05, ClientPlaySettingsPacket.class);
+                    put(0x28, ClientPlayCreativeInventoryActionPacket.class);
 
                     put(0x12, ClientPlayPositionPacket.class);
                     put(0x13, ClientPlayPositionAndRotationPacket.class);

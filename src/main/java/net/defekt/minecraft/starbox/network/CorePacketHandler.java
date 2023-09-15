@@ -89,6 +89,14 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
         connection.loadTerrain();
     }
 
+    @PacketHandlerMethod
+    public void onSettingsChange(ClientPlaySettingsPacket packet) {
+        connection.setLanguage(packet.getLang());
+        int prev = connection.getRenderDistance();
+        connection.setRenderDistance(Math.min(10, packet.getRenderDistance()));
+        if (prev != connection.getRenderDistance()) connection.loadTerrain();
+    }
+
     private void onMovement(Location to) {
         Location from = connection.getPosition();
         connection.setPosition(to);
