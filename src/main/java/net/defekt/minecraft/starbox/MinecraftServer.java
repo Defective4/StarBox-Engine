@@ -15,6 +15,7 @@ import net.defekt.minecraft.starbox.network.PlayerConnection;
 import net.defekt.minecraft.starbox.network.packets.clientbound.ClientboundPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayKeepAlivePacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayPlayerInfoPacket;
+import net.defekt.minecraft.starbox.storage.Operators;
 import net.defekt.minecraft.starbox.storage.Whitelist;
 import net.defekt.minecraft.starbox.world.World;
 
@@ -43,7 +44,18 @@ public class MinecraftServer implements AutoCloseable, OpenState {
     private final World world = World.createWorld();
 
     private final Whitelist whitelist = new Whitelist();
+    private final Operators operators = new Operators();
     private boolean publishedToLAN = false;
+
+    private int lastUsedEntityID = 0;
+
+    public Operators getOperators() {
+        return operators;
+    }
+
+    public int getFreeEntityID() {
+        return ++lastUsedEntityID;
+    }
 
     public MinecraftServer(String host, int port) throws IOException {
         server = this;

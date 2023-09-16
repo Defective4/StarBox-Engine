@@ -72,12 +72,13 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
         UUID uid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
         PlayerProfile profile = new PlayerProfile(name, uid, GameMode.CREATIVE, null);
         connection.setProfile(profile);
+        connection.setEntityID(connection.getServer().getFreeEntityID());
 
 
         connection.sendPacket(new ServerLoginSuccessPacket(uid, name));
         connection.setGameState(GameState.PLAY);
         connection.getServer().insertConnection(connection);
-        connection.sendPacket(new ServerPlayJoinGamePacket(1,
+        connection.sendPacket(new ServerPlayJoinGamePacket(connection.getEntityID(),
                                                            false,
                                                            profile.getGameMode(),
                                                            GameMode.NONE,
@@ -92,6 +93,8 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
         String brand = "StarBox (§btype §n/version§r)";
         DataTypes.writeVarString(buffer, brand);
         connection.sendPacket(new ServerPlayPluginMessagePacket("minecraft:brand", buffer.toByteArray()));
+        if (connection.isOperator())
+            connection.sendPacket(new ServerPlayEntityStatusPacket(connection.getEntityID(), 28));
         connection.teleport(new Location(8.5, 16, 8.5));
         connection.sendPacket(new ServerPlayTimePacket(connection.getWorld().getAgeTicks(),
                                                        -connection.getWorld().getTime()));

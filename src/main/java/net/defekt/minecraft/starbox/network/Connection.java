@@ -9,6 +9,7 @@ import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayN
 import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlaySoundEffectPacket;
 import net.defekt.minecraft.starbox.sound.Sound;
 import net.defekt.minecraft.starbox.sound.SoundCategory;
+import net.defekt.minecraft.starbox.storage.Operators;
 import net.defekt.minecraft.starbox.world.Location;
 
 import java.io.IOException;
@@ -48,6 +49,20 @@ public abstract class Connection {
     }
 
     public abstract void sendPacket(ClientboundPacket packet);
+
+    public boolean isOperator() {
+        if (profile == null) return false;
+        return getServer().getOperators().isOp(getProfile().getName());
+    }
+
+    public boolean setOperator(boolean op) {
+        if(profile == null) return false;
+        Operators ops = getServer().getOperators();
+        if(op)
+            return ops.op(profile.getName());
+        else
+            return ops.deop(profile.getName());
+    }
 
     public void sendMessage(ChatComponent message) {
         try {

@@ -37,6 +37,8 @@ public class CommandRegistry {
         registerCommand(new WeatherCommand());
         registerCommand(new StopCommand());
         registerCommand(new WhitelistCommand());
+        registerCommand(new OpCommand());
+        registerCommand(new DeopCommand());
         // TODO particle command
     }
 

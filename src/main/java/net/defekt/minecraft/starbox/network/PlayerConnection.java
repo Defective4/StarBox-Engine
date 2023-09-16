@@ -32,6 +32,7 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
     private final PlayerInventory inventory = new PlayerInventory(this);
     private final List<Chunk> viewingChunks = new ArrayList<>();
     private int renderDistance = 0;
+    private int entityID = 0;
     private GameState gameState = GameState.HANDSHAKING;
     private Location position = new Location(0, 0, 0);
     private String language = "en_US";
@@ -42,6 +43,14 @@ public class PlayerConnection extends Connection implements AutoCloseable, OpenS
         inputStream = new DataInputStream(socket.getInputStream());
         outputStream = socket.getOutputStream();
         coreHandler = new CorePacketHandler(this);
+    }
+
+    public int getEntityID() {
+        return entityID;
+    }
+
+    protected void setEntityID(int entityID) {
+        this.entityID = entityID;
     }
 
     public String getLanguage() {
