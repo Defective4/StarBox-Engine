@@ -3,16 +3,14 @@ package net.defekt.minecraft.starbox.network;
 import net.defekt.minecraft.starbox.MinecraftServer;
 import net.defekt.minecraft.starbox.command.Command;
 import net.defekt.minecraft.starbox.data.ChatComponent;
+import net.defekt.minecraft.starbox.data.DataTypes;
 import net.defekt.minecraft.starbox.data.GameMode;
 import net.defekt.minecraft.starbox.data.PlayerProfile;
 import net.defekt.minecraft.starbox.inventory.ItemStack;
 import net.defekt.minecraft.starbox.network.packets.AnnotatedPacketHandler;
 import net.defekt.minecraft.starbox.network.packets.PacketHandlerMethod;
 import net.defekt.minecraft.starbox.network.packets.clientbound.login.ServerLoginSuccessPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayDeclareCommandsPacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayGameStatePacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayJoinGamePacket;
-import net.defekt.minecraft.starbox.network.packets.clientbound.play.ServerPlayTimePacket;
+import net.defekt.minecraft.starbox.network.packets.clientbound.play.*;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusPongPacket;
 import net.defekt.minecraft.starbox.network.packets.clientbound.status.ServerStatusResponsePacket;
 import net.defekt.minecraft.starbox.network.packets.serverbound.HandshakePacket;
@@ -24,6 +22,7 @@ import net.defekt.minecraft.starbox.storage.Whitelist;
 import net.defekt.minecraft.starbox.world.Location;
 import net.defekt.minecraft.starbox.world.World;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -89,6 +88,10 @@ public class CorePacketHandler extends AnnotatedPacketHandler {
                                                            true,
                                                            false,
                                                            true));
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        String brand = "StarBox (§btype §n/version§r)";
+        DataTypes.writeVarString(buffer, brand);
+        connection.sendPacket(new ServerPlayPluginMessagePacket("minecraft:brand", buffer.toByteArray()));
         connection.teleport(new Location(8.5, 16, 8.5));
         connection.sendPacket(new ServerPlayTimePacket(connection.getWorld().getAgeTicks(),
                                                        -connection.getWorld().getTime()));
